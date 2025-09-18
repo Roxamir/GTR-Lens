@@ -1,0 +1,41 @@
+# GTR Lens
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Status: In Progress](https://img.shields.io/badge/status-in%20progress-blue)
+
+A full-stack web application designed for Grover Tool and Rentals to track the before-and-after condition of rental equipment. This tool helps to streamline the check-in/check-out process, minimize customer disputes, and maintain a visual history of asset conditions.
+
+---
+
+## Key Features
+
+- **Photo Upload:** Upload 'before' (check-out) and 'after' (check-in) photos for equipment.
+- **Data Association:** Link images to specific Equipment IDs and Rental Contract numbers.
+- **Condition History:** View a complete visual history of an asset's condition over time.
+- **Search & Filter:** Easily find records by searching for a contract number or equipment ID.
+- **User Authentication:** Secure login system for employees.
+
+---
+
+## Tech Stack
+
+### Backend
+- **Python**
+- **Django & Django REST Framework**
+- **PostgreSQL** (Database)
+
+### Frontend
+- **JavaScript**
+- **React**
+- **Tailwind CSS**
+
+### Deployment
+- **Docker**
+- **AWS S3** (For Image Storage)
+- **AWS EC2** (For Hosting)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2025 Ramiro Covarrubias
