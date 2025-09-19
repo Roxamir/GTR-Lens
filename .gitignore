@@ -1,0 +1,4 @@
+diffs
+.env
+backend/src/db.sqlite3
+__pycache__/
