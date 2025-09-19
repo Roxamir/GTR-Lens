@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+<<<<<<< HEAD
 
 class Equipment(models.Model):
     name = models.CharField(max_length=100)
@@ -30,3 +31,5 @@ class ConditionPhoto(models.Model):
 
     def __str__(self):
         return f"{self.equipment.name} - {self.get_photo_location_display()} on {self.timestamp.strftime('%Y-%m-%d')}"    
+=======
+>>>>>>> a202756 (feat(backend): Initialize Django project structure)

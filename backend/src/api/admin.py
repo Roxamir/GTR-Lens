@@ -1,4 +1,5 @@
 from django.contrib import admin
+<<<<<<< HEAD
 from .models import Equipment, ConditionPhoto
 from django.utils.html import mark_safe
 
@@ -19,3 +20,7 @@ class ConditionPhotoAdmin(admin.ModelAdmin):
         return "No Image"
     
     image_preview.short_description = 'Image Preview'
+=======
+
+# Register your models here.
+>>>>>>> a202756 (feat(backend): Initialize Django project structure)

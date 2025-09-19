@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .models import Equipment, ConditionPhoto
@@ -39,3 +40,8 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
         
         # Finally, order the result
         return queryset.order_by('-timestamp')
+=======
+from django.shortcuts import render
+
+# Create your views here.
+>>>>>>> a202756 (feat(backend): Initialize Django project structure)
