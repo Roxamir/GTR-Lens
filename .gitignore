@@ -3,3 +3,4 @@ diffs
 backend/src/db.sqlite3
 __pycache__/
 /backend/media
+requests.http
