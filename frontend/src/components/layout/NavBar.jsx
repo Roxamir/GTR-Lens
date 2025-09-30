@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   HiWrenchScrewdriver,
   HiArrowUpTray,
@@ -23,9 +23,11 @@ const NavItem = ({ to, children, onClick }) => (
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const closeMenu = () => setIsMenuOpen(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   return (
-    <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between bg-slate-900 text-white px-8">
+    <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between bg-slate-900 text-white px-8 z-10">
       <Link to="/" className="group" onClick={closeMenu}>
         <img
           src="/src/assets/gtr_logo.svg"
@@ -37,7 +39,10 @@ const NavBar = () => {
       </Link>
 
       {/*Desktop Navigation*/}
-      <nav className="hidden md:flex items-center gap-8">
+      <nav
+        // if on Home Page, hide navigation icons
+        className={`hidden md:flex items-center gap-8 ${isHomePage ? "!hidden" : ""}`}
+      >
         <NavItem to="/equipment">
           <HiWrenchScrewdriver className="w-6 h-6" />
           <span className="text-xs">Equipment</span>
@@ -74,7 +79,7 @@ const NavBar = () => {
 
       {/*Mobile Menu Dropdown*/}
       {isMenuOpen && (
-        <div className="absolute left-0 top-16 w-full bg-slate-900 md:hidden">
+        <div className="absolute left-0 top-16 w-full bg-slate-900 md:hidden z-20">
           <nav className="flex flex-col items-center gap-6 py-8">
             <NavItem to="/equipment" onClick={() => setIsMenuOpen(false)}>
               <HiWrenchScrewdriver className="h-6 w-6" />

@@ -1,5 +1,3 @@
-// frontend/src/components/ui/SearchableDropdown.jsx
-
 import { useState, useRef, useEffect } from "react";
 
 const SearchableDropdown = ({
@@ -42,7 +40,7 @@ const SearchableDropdown = ({
   };
 
   return (
-    <div className="relative w-full" ref={dropdownRef}>
+    <div className="w-full relative" ref={dropdownRef}>
       <label className="block mb-1 font-semibold text-white">Equipment</label>
       <div
         className="border rounded-md p-2 bg-slate-900 cursor-pointer flex justify-between items-center"
@@ -56,7 +54,7 @@ const SearchableDropdown = ({
         </span>
       </div>
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 border rounded-md bg-slate-900 mt-1 shadow-lg z-10">
+        <div className="absolute top-full left-0 right-0 border rounded-md bg-slate-900 mt-1 shadow-lg">
           <input
             type="text"
             className="w-full p-2 border-b focus:outline-none"
@@ -69,7 +67,7 @@ const SearchableDropdown = ({
               filteredOptions.map((option) => (
                 <div
                   key={option.id}
-                  className="p-2 hover:bg-red-400 cursor-pointer"
+                  className="p-2 hover:bg-red-900 cursor-pointer"
                   onClick={() => handleOptionClick(option)}
                 >
                   {option[displayKey]}

@@ -1,5 +1,3 @@
-// frontend/src/pages/UploadPage.jsx
-
 import { useState, useEffect } from "react";
 import { getEquipmentList } from "../services/apiService";
 import {
@@ -22,6 +20,7 @@ const UploadPage = () => {
   const [equipmentList, setEquipmentList] = useState([]);
   const [selectedEquipment, setSelectedEquipment] = useState(null);
   const [errors, setErrors] = useState({});
+  const [damageReports, setDamageReports] = useState([]);
 
   // Fetch the list of equipment when the page loads
   useEffect(() => {
@@ -36,6 +35,28 @@ const UploadPage = () => {
 
     fetchEquipment();
   }, []);
+
+  const handleAddDamageReport = () => {
+    setDamageReports([
+      ...damageReports,
+      { damage_type: "OTHER", notes: "" }, //
+    ]);
+  };
+
+  const handleRemoveDamageReport = (indexToRemove) => {
+    setDamageReports(damageReports.filter((_, i) => i !== indexToRemove));
+  };
+
+  const handleDamageReportChange = (index, field, value) => {
+    const newDamageReports = damageReports.map((report, i) => {
+      if (i === index) {
+        return { ...report, [field]: value };
+      }
+      return report;
+    });
+
+    setDamageReports(newDamageReports);
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -57,6 +78,7 @@ const UploadPage = () => {
     console.log("Submitting:", {
       equipmentId: selectedEquipment.id,
       contractId: contractId,
+      damageReports: damageReports,
     });
     // Final API submission logic will go here
   };
@@ -73,6 +95,10 @@ const UploadPage = () => {
         onEquipmentSelect={setSelectedEquipment}
         onSubmit={handleSubmit}
         errors={errors}
+        damageReports={damageReports}
+        onAddDamageReport={handleAddDamageReport}
+        onDamageReportChange={handleDamageReportChange}
+        onRemoveDamageReport={handleRemoveDamageReport}
       />
 
       {/* A small panel to display the current selection for testing */}
@@ -86,5 +112,4 @@ const UploadPage = () => {
     </div>
   );
 };
-
 export default UploadPage;
