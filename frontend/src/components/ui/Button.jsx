@@ -13,6 +13,7 @@ const Button = ({
   const variantStyles = {
     primary: "bg-red-700 text-white! hover:bg-red-900 focus:ring-red-500",
     secondary: "bg-gray-600 text-white! hover:bg-gray-700 focus:ring-gray-500",
+    icon: "bg-transparent hover:bg-slate-700 focus:ring-slate-500 p-2",
   };
   const Component = as === "link" ? Link : "button";
 

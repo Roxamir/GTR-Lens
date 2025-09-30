@@ -26,7 +26,7 @@ const NavBar = () => {
 
   return (
     <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between bg-slate-900 text-white px-8">
-      <Link to="/" className="group">
+      <Link to="/" className="group" onClick={closeMenu}>
         <img
           src="/src/assets/gtr_logo.svg"
           width={50}
@@ -63,13 +63,13 @@ const NavBar = () => {
 
       {/*Hamburger Menu*/}
       <div className="md:hidden">
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        <Button variant="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? (
             <HiOutlineXMark className="h-8 w-8" />
           ) : (
             <HiOutlineBars3 className="h-8 w-8" />
           )}
-        </button>
+        </Button>
       </div>
 
       {/*Mobile Menu Dropdown*/}
