@@ -19,11 +19,17 @@ class ConditionPhoto(models.Model):
         ('OTHER', 'Other'),
     ]
 
+    PHOTO_TYPES = [
+        ('BEFORE', 'Before (Check-Out)'),
+        ('AFTER', 'After (Check-In)'),
+    ]
+
     image = models.ImageField(upload_to='photos/')
     contract_identifier = models.CharField(max_length=10)
     timestamp = models.DateTimeField(auto_now_add=True)
     photo_location = models.CharField(max_length=50, choices=PHOTO_LOCATIONS, default='OTHER')
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name='photos')
+    photo_type = models.CharField(max_length=10, choices=PHOTO_TYPES, default='AFTER')
     notes = models.TextField(blank=True, null=True)
     
     def __str__(self):

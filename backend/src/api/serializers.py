@@ -11,4 +11,4 @@ class EquipmentSerializer(serializers.ModelSerializer):
 class ConditionPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConditionPhoto
-        fields = ['id', 'image', 'contract_identifier', 'timestamp', 'photo_location', 'equipment', 'notes']
+        fields = ['id', 'image', 'contract_identifier', 'timestamp', 'photo_location', 'equipment', 'notes', 'photo_type']

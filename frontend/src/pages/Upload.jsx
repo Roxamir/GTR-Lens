@@ -21,6 +21,14 @@ const UploadPage = () => {
   const [selectedEquipment, setSelectedEquipment] = useState(null);
   const [errors, setErrors] = useState({});
   const [damageReports, setDamageReports] = useState([]);
+  const [files, setFiles] = useState({
+    frontPhoto: null,
+    rearPhoto: null,
+    leftPhoto: null,
+    rightPhoto: null,
+    hookupPhoto: null,
+  });
+  const [uploadType, setUploadType] = useState("AFTER");
 
   // Fetch the list of equipment when the page loads
   useEffect(() => {
@@ -35,6 +43,20 @@ const UploadPage = () => {
 
     fetchEquipment();
   }, []);
+
+  useEffect(() => {
+    // Reset all files back to null when uploadType changes
+    setFiles({
+      frontPhoto: null,
+      rearPhoto: null,
+      leftPhoto: null,
+      rightPhoto: null,
+      hookupPhoto: null,
+    });
+
+    // Remove damage reports when uploadType changes
+    setDamageReports([]);
+  }, [uploadType]);
 
   const handleAddDamageReport = () => {
     setDamageReports([
@@ -54,8 +76,15 @@ const UploadPage = () => {
       }
       return report;
     });
-
     setDamageReports(newDamageReports);
+  };
+
+  const handleFileChange = (event) => {
+    const { name, files: selectedFiles } = event.target;
+    setFiles((prevFiles) => ({
+      ...prevFiles,
+      [name]: selectedFiles[0],
+    }));
   };
 
   const handleSubmit = (event) => {
@@ -65,22 +94,63 @@ const UploadPage = () => {
       return;
     }
 
+    const newErrors = {};
     const contractIdError = validateInput(contractIdValidators, contractId);
 
-    // if error, stop submission
+    // check contract ID
     if (contractIdError) {
-      setErrors({ contractId: contractIdError });
-      return;
+      newErrors.contractId = contractIdError;
+    }
+
+    // check file uploads
+    if (uploadType === "AFTER") {
+      if (!files.frontPhoto) {
+        newErrors.frontPhoto = "Front photo is required.";
+      }
+      if (!files.rearPhoto) {
+        newErrors.rearPhoto = "Rear photo is required.";
+      }
+      if (!files.leftPhoto) {
+        newErrors.leftPhoto = "Left side photo is required.";
+      }
+      if (!files.rightPhoto) {
+        newErrors.rightPhoto = "Right side photo is required.";
+      }
+    } else if (uploadType === "BEFORE") {
+      if (!files.hookupPhoto) {
+        newErrors.hookupPhoto = "Hookup photo is required.";
+      }
+    }
+
+    // Check if any errors were found
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return; // Stop the submission
     }
 
     // otherwise, clear error state and proceed
     setErrors({});
-    console.log("Submitting:", {
-      equipmentId: selectedEquipment.id,
-      contractId: contractId,
-      damageReports: damageReports,
-    });
-    // Final API submission logic will go here
+    console.log(" Validation passed! Submitting form...");
+
+    const formData = new FormData();
+
+    formData.append("equipment", selectedEquipment.id);
+    formData.append("contract_identifier", contractId);
+
+    if (files.frontPhoto) formData.append("front_view_photo", files.frontPhoto);
+    if (files.rearPhoto) formData.append("rear_view_photo", files.rearPhoto);
+    if (files.leftPhoto) formData.append("left_view_photo", files.leftPhoto);
+    if (files.rightPhoto) formData.append("right_view_photo", files.rightPhoto);
+    if (files.hookupPhoto)
+      formData.append("hookup_view_photo", files.hookupPhoto);
+
+    if (damageReports.length > 0) {
+      formData.append("damage_reports", JSON.stringify(damageReports));
+    }
+
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
   };
 
   return (
@@ -99,6 +169,10 @@ const UploadPage = () => {
         onAddDamageReport={handleAddDamageReport}
         onDamageReportChange={handleDamageReportChange}
         onRemoveDamageReport={handleRemoveDamageReport}
+        onFileChange={handleFileChange}
+        files={files}
+        uploadType={uploadType}
+        setUploadType={setUploadType}
       />
 
       {/* A small panel to display the current selection for testing */}

@@ -8,6 +8,14 @@ const DAMAGE_TYPES = [
   { value: "OTHER", label: "Other" },
 ];
 
+const DAMAGE_LOCATIONS = [
+  { value: "FRONT", label: "Front" },
+  { value: "REAR", label: "Rear" },
+  { value: "LEFT", label: "Left" },
+  { value: "RIGHT", label: "Right" },
+  { value: "OTHER", label: "Other" },
+];
+
 const DamageReportForm = ({
   index,
   reportData,
@@ -28,6 +36,30 @@ const DamageReportForm = ({
         </Button>
       </div>
 
+      {/* Damage Location Dropdown */}
+      <div>
+        <label
+          htmlFor={`damage-location-${index}`}
+          className="block mb-1 text-sm font-semibold"
+        >
+          Damage Location
+        </label>
+        <select
+          id={`damage-location-${index}`}
+          name="damage_location"
+          value={reportData.damage_location}
+          onChange={(e) =>
+            onDamageReportChange(index, "damage_location", e.target.value)
+          }
+          className="w-full border rounded-md p-2 bg-slate-800 text-white"
+        >
+          {DAMAGE_LOCATIONS.map((location) => (
+            <option key={location.value} value={location.value}>
+              {location.label}
+            </option>
+          ))}
+        </select>
+      </div>
       {/* Damage Type Dropdown */}
       <div>
         <label
