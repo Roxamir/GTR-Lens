@@ -1,4 +1,3 @@
-// frontend/src/routes/Root.jsx
 import { Outlet } from "react-router-dom";
 import NavBar from "../components/layout/NavBar";
 

@@ -1,13 +1,16 @@
 import { HiOutlineTrash } from "react-icons/hi2";
 import { formatDate } from "../../utils/formatDate";
 
-const PhotoCard = ({ photo, onDelete }) => {
+const PhotoCard = ({ photo, onDelete, setSelectedImage }) => {
   const imageUrl = photo.image;
 
   const formattedDate = formatDate(photo.timestamp);
 
   return (
-    <div className="bg-slate-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105 group">
+    <div
+      className="bg-slate-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105 group"
+      onClick={() => setSelectedImage(imageUrl)}
+    >
       <div className="relative">
         <img
           src={imageUrl}
