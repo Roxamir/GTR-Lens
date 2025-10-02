@@ -36,7 +36,7 @@ const UploadPage = () => {
     const fetchEquipment = async () => {
       try {
         const data = await getEquipmentList();
-        setEquipmentList(data);
+        setEquipmentList(data.results);
       } catch (error) {
         console.error("Error fetching equipment:", error);
       }

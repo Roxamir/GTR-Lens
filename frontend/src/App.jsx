@@ -1,57 +1,50 @@
-import * as React from 'react'
-import * as ReactDOM from 'react-dom/client'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import './index.css'
+import "./index.css";
 
-// Components 
-import Root from './routes/Root'
-import EquipmentList from './pages/EquimpentList'
-import Error from './pages/Error'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import PhotoList from './pages/PhotoList'
-import Upload from './pages/Upload'
-
-
+// Components
+import Root from "./routes/Root";
+import EquipmentPage from "./pages/EquimpentPage";
+import ErrorPage from "./pages/ErrorPage";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import PhotosPage from "./pages/PhotosPage";
+import UploadPage from "./pages/UploadPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
-    errorElement: <Error />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
-        element: <Home />
+        element: <HomePage />,
       },
       {
         path: "equipment",
-        element: <EquipmentList />
+        element: <EquipmentPage />,
       },
       {
         path: "login",
-        element: <Login />
+        element: <LoginPage />,
       },
       {
         path: "photos",
-        element: <PhotoList />
+        element: <PhotosPage />,
       },
       {
         path: "upload",
-        element: <Upload />
+        element: <UploadPage />,
       },
-    ]
-
+    ],
   },
-  
 ]);
 
 function App() {
-  return <RouterProvider router={router}/>
+  return <RouterProvider router={router} />;
 }
 
 export default App;

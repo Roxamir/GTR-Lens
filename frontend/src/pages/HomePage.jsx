@@ -1,5 +1,3 @@
-// frontend/src/pages/HomePage.jsx
-
 import PageLayout from "../components/layout/Layout";
 import Button from "../components/ui/Button";
 
