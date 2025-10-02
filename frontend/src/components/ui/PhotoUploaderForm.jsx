@@ -13,6 +13,7 @@ const PhotoUploaderForm = ({
   damageReports,
   files,
   errors,
+  formError,
   uploadType,
   setUploadType,
   onAddDamageReport,
@@ -29,6 +30,7 @@ const PhotoUploaderForm = ({
         onSelect={onEquipmentSelect}
         label="Select Equipment"
         displayKey="name"
+        error={errors.equipment}
       />
       <InputField
         label="Contract ID"
@@ -123,8 +125,15 @@ const PhotoUploaderForm = ({
           error={errors.hookupPhoto}
         />
       )}
-      <div className="flex flex-col items-center space-y-3">
-        <Button>Submit</Button>
+
+      <div className="flex flex-col items-center space-y-4 pt-4 border-t border-gray-700">
+        {formError && (
+          <div className="text-red-500 font-semibold text-center">
+            {formError}
+          </div>
+        )}
+
+        <Button type="submit">Submit</Button>
       </div>
     </form>
   );

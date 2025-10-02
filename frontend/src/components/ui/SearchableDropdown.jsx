@@ -6,6 +6,7 @@ const SearchableDropdown = ({
   onSelect,
   placeholder = "Search or select an option",
   displayKey,
+  error,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -43,7 +44,9 @@ const SearchableDropdown = ({
     <div className="w-full relative" ref={dropdownRef}>
       <label className="block mb-1 font-semibold text-white">Equipment</label>
       <div
-        className="border rounded-md p-2 bg-slate-900 cursor-pointer flex justify-between items-center"
+        className={`border rounded-md p-2 bg-slate-900 cursor-pointer flex justify-between items-center ${
+          error ? "border-red-500" : "border-gray-500"
+        }`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {selected ? selected[displayKey] : placeholder}
@@ -53,6 +56,7 @@ const SearchableDropdown = ({
           &#x25BC;
         </span>
       </div>
+      {error && <span className="text-red-600 text-sm mt-1">{error}</span>}
       {isOpen && (
         <div className="absolute top-full left-0 right-0 border rounded-md bg-slate-900 mt-1 shadow-lg">
           <input

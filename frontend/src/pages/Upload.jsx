@@ -29,6 +29,7 @@ const UploadPage = () => {
     hookupPhoto: null,
   });
   const [uploadType, setUploadType] = useState("AFTER");
+  const [formError, setFormError] = useState(null);
 
   // Fetch the list of equipment when the page loads
   useEffect(() => {
@@ -89,12 +90,11 @@ const UploadPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const newErrors = {};
     if (!selectedEquipment) {
-      alert("Please select a piece of equipment.");
-      return;
+      newErrors.equipment = "Please select a piece of equipment.";
     }
 
-    const newErrors = {};
     const contractIdError = validateInput(contractIdValidators, contractId);
 
     // check contract ID
@@ -125,11 +125,13 @@ const UploadPage = () => {
     // Check if any errors were found
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      setFormError("Please correct the errors above before submitting.");
       return; // Stop the submission
     }
 
     // otherwise, clear error state and proceed
     setErrors({});
+    setFormError(null);
     console.log(" Validation passed! Submitting form...");
 
     const formData = new FormData();
@@ -173,6 +175,7 @@ const UploadPage = () => {
         files={files}
         uploadType={uploadType}
         setUploadType={setUploadType}
+        formError={formError}
       />
 
       {/* A small panel to display the current selection for testing */}

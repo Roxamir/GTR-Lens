@@ -1,4 +1,17 @@
+import { useState, useEffect } from "react";
+
 const FileInput = ({ label, name, onFileChange, error, selectedFile }) => {
+  const [previewUrl, setPreviewUrl] = useState(null);
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreviewUrl(null);
+      return;
+    }
+    const objectURL = URL.createObjectURL(selectedFile);
+    setPreviewUrl(objectURL);
+    return () => URL.revokeObjectURL(objectURL);
+  }, [selectedFile]);
+
   return (
     <div className="w-full">
       <label
@@ -12,18 +25,24 @@ const FileInput = ({ label, name, onFileChange, error, selectedFile }) => {
         className={`w-full flex items-center justify-center p-4 border-2 border-dashed rounded-md cursor-pointer
                     ${error ? "border-red-500" : "border-gray-500 hover:border-blue-400"}`}
       >
-        <div className="text-center">
-          <span className="hidden md:block">
-            {selectedFile
-              ? selectedFile.name + " ✅"
-              : "Click to upload or drag and drop"}
-          </span>
-          <span className="md:hidden block">
-            {selectedFile ? selectedFile.name + " ✅" : "Click to upload"}
-          </span>
-          <span className="block text-xs text-gray-400">
-            PNG, JPG up to 10MB
-          </span>
+        <div className="items-center">
+          {previewUrl ? (
+            <div className="text-center">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="w-full h-36 object-contain rounded-md"
+              />
+              {selectedFile.name}
+            </div>
+          ) : (
+            <div className="text-center">
+              <span className="block">Click to upload</span>
+              <span className="block text-xs text-gray-400">
+                PNG, JPG up to 10MB
+              </span>
+            </div>
+          )}
         </div>
       </label>
       <input
