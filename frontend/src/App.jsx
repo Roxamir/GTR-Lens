@@ -6,12 +6,13 @@ import "./index.css";
 
 // Components
 import Root from "./routes/Root";
-import EquipmentPage from "./pages/EquimpentPage";
 import ErrorPage from "./pages/ErrorPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import PhotosPage from "./pages/PhotosPage";
 import UploadPage from "./pages/UploadPage";
+import EquipmentListPage from "./pages/EquipmentPage";
+import EquipmentDetailPage from "./pages/EquipmentDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -25,7 +26,11 @@ const router = createBrowserRouter([
       },
       {
         path: "equipment",
-        element: <EquipmentPage />,
+        element: <EquipmentListPage />,
+      },
+      {
+        path: "equipment/:id",
+        element: <EquipmentDetailPage />,
       },
       {
         path: "login",
