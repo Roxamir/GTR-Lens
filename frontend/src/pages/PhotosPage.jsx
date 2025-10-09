@@ -21,7 +21,6 @@ const PhotosPage = () => {
     const fetchPhotos = async () => {
       try {
         const data = await getPhotos(null, currentPage);
-        console.log(`Data for page ${currentPage}:`, data.results);
         setPhotos(data.results);
         setTotalPhotos(data.count);
       } catch (error) {

@@ -45,25 +45,25 @@ const PhotoUploaderForm = ({
           <input
             type="radio"
             name="uploadType"
-            value="AFTER"
-            checked={uploadType === "AFTER"}
-            onChange={() => setUploadType("AFTER")}
+            value="IN"
+            checked={uploadType === "IN"}
+            onChange={() => setUploadType("IN")}
           />
-          After (Check-In)
+          Check-In
         </label>
         <label>
           <input
             type="radio"
             name="uploadType"
-            value="BEFORE"
-            checked={uploadType === "BEFORE"}
-            onChange={() => setUploadType("BEFORE")}
+            value="OUT"
+            checked={uploadType === "OUT"}
+            onChange={() => setUploadType("OUT")}
           />
-          Before (Check-Out)
+          Check-Out
         </label>
       </div>
 
-      {uploadType === "AFTER" ? (
+      {uploadType === "IN" ? (
         <>
           <FileInput
             label="Front View"

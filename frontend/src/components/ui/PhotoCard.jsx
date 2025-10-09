@@ -8,7 +8,7 @@ const PhotoCard = ({ photo, onDelete, setSelectedImage }) => {
 
   return (
     <div
-      className="bg-slate-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105 group"
+      className="bg-slate-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105 group cursor-pointer"
       onClick={() => setSelectedImage(imageUrl)}
     >
       <div className="relative">

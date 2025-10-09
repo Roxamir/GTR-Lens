@@ -13,7 +13,6 @@ const EquipmentPage = () => {
     const fetchEquipment = async () => {
       try {
         const data = await getEquipmentList();
-        console.log("Full API response:", data);
         setEquipmentList(data.results);
       } catch (error) {
         console.error("Error fetching equipment:", error);

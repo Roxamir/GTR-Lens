@@ -5,8 +5,9 @@ import {
   validateIsNumber,
   validateLength,
 } from "../utils/validators";
-import PhotoUploaderForm from "../components/ui/PhotoUploaderForm"; // Corrected import path
+import PhotoUploaderForm from "../components/ui/PhotoUploaderForm";
 import { validateInput } from "../utils/validateInput";
+import { useSearchParams } from "react-router-dom";
 
 const contractIdValidators = [
   validateRequired,
@@ -28,8 +29,11 @@ const UploadPage = () => {
     rightPhoto: null,
     hookupPhoto: null,
   });
-  const [uploadType, setUploadType] = useState("AFTER");
+  const [uploadType, setUploadType] = useState("OUT");
   const [formError, setFormError] = useState(null);
+  const [searchParams] = useSearchParams();
+  const preSelectedId = searchParams.get("equipment");
+  const preSelectedType = searchParams.get("type");
 
   // Fetch the list of equipment when the page loads
   useEffect(() => {
@@ -37,13 +41,22 @@ const UploadPage = () => {
       try {
         const data = await getEquipmentList();
         setEquipmentList(data.results);
+        if (preSelectedId) {
+          const equipment = data.results.find(
+            (eq) => eq.id === parseInt(preSelectedId)
+          );
+          setSelectedEquipment(equipment);
+        }
+        if (preSelectedType) {
+          setUploadType(preSelectedType);
+        }
       } catch (error) {
         console.error("Error fetching equipment:", error);
       }
     };
 
     fetchEquipment();
-  }, []);
+  }, [preSelectedId, preSelectedType]);
 
   useEffect(() => {
     // Reset all files back to null when uploadType changes
@@ -103,7 +116,7 @@ const UploadPage = () => {
     }
 
     // check file uploads
-    if (uploadType === "AFTER") {
+    if (uploadType === "IN") {
       if (!files.frontPhoto) {
         newErrors.frontPhoto = "Front photo is required.";
       }
@@ -116,7 +129,7 @@ const UploadPage = () => {
       if (!files.rightPhoto) {
         newErrors.rightPhoto = "Right side photo is required.";
       }
-    } else if (uploadType === "BEFORE") {
+    } else if (uploadType === "OUT") {
       if (!files.hookupPhoto) {
         newErrors.hookupPhoto = "Hookup photo is required.";
       }

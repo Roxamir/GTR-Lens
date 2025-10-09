@@ -1,6 +1,12 @@
+import { useNavigate } from "react-router-dom";
+
 const EquipmentCard = ({ equipment }) => {
+  const navigate = useNavigate();
   return (
-    <div className="bg-slate-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105 cursor-pointer">
+    <div
+      className="bg-slate-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105 cursor-pointer"
+      onClick={() => navigate(`/equipment/${equipment.id}`)}
+    >
       <div className="p-6">
         {/* Equipment Name */}
         <h3 className="text-xl font-bold text-white mb-3">{equipment.name}</h3>
@@ -8,7 +14,7 @@ const EquipmentCard = ({ equipment }) => {
         {/* Contract Info */}
         <div className="space-y-2">
           <div className="text-sm text-gray-300">
-            <span className="font-semibold">Latest Contract:</span>{" "}
+            <span className="font-semibold">Latest Contract Checked Out:</span>{" "}
             <span className="text-gray-400">
               {equipment.latest_contract_identifier || "N/A"}
             </span>

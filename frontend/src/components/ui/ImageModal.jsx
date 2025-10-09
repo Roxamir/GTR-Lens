@@ -20,7 +20,7 @@ const ImageModal = ({ image, isModalOpen, onClose }) => {
         <img
           src={image}
           alt="Enlarged view"
-          className="max-h-[calc(90vh-80px)] w-auto object-contain"
+          className="max-h-[calc(90vh-80px)] w-auto object-contain rounded-sm"
         />
         <Button
           onClick={onClose}

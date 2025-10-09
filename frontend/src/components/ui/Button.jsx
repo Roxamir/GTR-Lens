@@ -9,7 +9,7 @@ const Button = ({
   ...props
 }) => {
   const baseStyles =
-    "rounded py-2 px-4 font-semibold transition duration-200 ease-in-out active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2";
+    "cursor-pointer rounded py-2 px-4 font-semibold transition duration-200 ease-in-out active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2";
   const variantStyles = {
     primary: "bg-red-700 text-white! hover:bg-red-900 focus:ring-red-500",
     secondary: "bg-gray-600 text-white! hover:bg-gray-700 focus:ring-gray-500",
