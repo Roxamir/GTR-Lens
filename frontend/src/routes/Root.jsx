@@ -1,15 +1,15 @@
-import NavBar from '../components/layout/NavBar'
-import { Outlet } from 'react-router-dom'
+import { Outlet } from "react-router-dom";
+import NavBar from "../components/layout/NavBar";
 
-const App = () => {
+const Root = () => {
   return (
-    <div>
+    <div className="bg-neutral-900 text-white min-h-screen flex flex-col items-center">
       <NavBar />
-      <main>
+      <main className="pt-16 w-full flex-grow flex justify-center">
         <Outlet />
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default Root;
