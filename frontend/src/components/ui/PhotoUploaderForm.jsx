@@ -23,119 +23,115 @@ const PhotoUploaderForm = ({
   onSubmit,
 }) => {
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
-      <SearchableDropdown
-        options={equipmentList}
-        selected={selectedEquipment}
-        onSelect={onEquipmentSelect}
-        label="Select Equipment"
-        displayKey="name"
-        error={errors.equipment}
-      />
-      <InputField
-        label="Contract ID"
-        name="contractId"
-        type="text"
-        value={contractId}
-        onChange={onContractIdChange}
-        error={errors.contractId}
-      />
-      <div className="space-x-2 items-center">
-        <label>
-          <input
-            type="radio"
-            name="uploadType"
-            value="IN"
-            checked={uploadType === "IN"}
-            onChange={() => setUploadType("IN")}
-          />
-          Check-In
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="uploadType"
-            value="OUT"
-            checked={uploadType === "OUT"}
-            onChange={() => setUploadType("OUT")}
-          />
-          Check-Out
-        </label>
-      </div>
-
-      {uploadType === "IN" ? (
-        <>
-          <FileInput
-            label="Front View"
-            name="frontPhoto"
-            onFileChange={onFileChange}
-            error={errors.frontPhoto}
-            selectedFile={files.frontPhoto}
-          />
-          <FileInput
-            label="Rear View"
-            name="rearPhoto"
-            onFileChange={onFileChange}
-            error={errors.rearPhoto}
-            selectedFile={files.rearPhoto}
-          />
-          <FileInput
-            label="Left Side View"
-            name="leftPhoto"
-            onFileChange={onFileChange}
-            error={errors.leftPhoto}
-            selectedFile={files.leftPhoto}
-          />
-          <FileInput
-            label="Right Side View"
-            name="rightPhoto"
-            onFileChange={onFileChange}
-            error={errors.rightPhoto}
-            selectedFile={files.rightPhoto}
-          />
-
-          <div className="flex flex-col items-center space-y-3">
-            {damageReports.map((report, index) => {
-              return (
-                <DamageReportForm
-                  key={index}
-                  index={index}
-                  reportData={report}
-                  onDamageReportChange={onDamageReportChange}
-                  onRemoveDamageReport={onRemoveDamageReport}
-                />
-              );
-            })}
-
-            <Button
-              variant="secondary"
-              type="button"
-              onClick={onAddDamageReport}
-            >
-              + Add Damage Report
-            </Button>
-          </div>
-        </>
-      ) : (
-        <FileInput
-          label="Hookup View"
-          name="hookupPhoto"
-          onFileChange={onFileChange}
-          selectedFile={files.hookupPhoto}
-          error={errors.hookupPhoto}
+    <div className="flex flex-col m-auto w-full max-w-md rounded-xl bg-slate-900 p-6 items-center shadow-lg">
+      <form onSubmit={onSubmit} className="space-y-6 w-96">
+        <SearchableDropdown
+          options={equipmentList}
+          selected={selectedEquipment}
+          onSelect={onEquipmentSelect}
+          label="Select Equipment"
+          displayKey="name"
+          error={errors.equipment}
         />
-      )}
+        <InputField
+          label="Contract ID"
+          name="contractId"
+          type="text"
+          value={contractId}
+          onChange={onContractIdChange}
+          error={errors.contractId}
+        />
+        <div className="space-x-2 items-center">
+          <label>
+            <input
+              type="radio"
+              name="uploadType"
+              value="OUT"
+              checked={uploadType === "OUT"}
+              onChange={() => setUploadType("OUT")}
+            />
+            Check-Out
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="uploadType"
+              value="IN"
+              checked={uploadType === "IN"}
+              onChange={() => setUploadType("IN")}
+            />
+            Check-In
+          </label>
+        </div>
 
-      <div className="flex flex-col items-center space-y-4 pt-4 border-t border-gray-700">
-        {formError && (
-          <div className="text-red-500 font-semibold text-center">
-            {formError}
-          </div>
+        {uploadType === "IN" ? (
+          <>
+            <FileInput
+              label="Front View"
+              name="frontPhoto"
+              onFileChange={onFileChange}
+              error={errors.frontPhoto}
+              selectedFile={files.frontPhoto}
+            />
+            <FileInput
+              label="Rear View"
+              name="rearPhoto"
+              onFileChange={onFileChange}
+              error={errors.rearPhoto}
+              selectedFile={files.rearPhoto}
+            />
+            <FileInput
+              label="Left Side View"
+              name="leftPhoto"
+              onFileChange={onFileChange}
+              error={errors.leftPhoto}
+              selectedFile={files.leftPhoto}
+            />
+            <FileInput
+              label="Right Side View"
+              name="rightPhoto"
+              onFileChange={onFileChange}
+              error={errors.rightPhoto}
+              selectedFile={files.rightPhoto}
+            />
+
+            <div className="flex flex-col items-center space-y-3">
+              {damageReports.map((report, index) => {
+                return (
+                  <DamageReportForm
+                    key={index}
+                    index={index}
+                    reportData={report}
+                    onDamageReportChange={onDamageReportChange}
+                    onRemoveDamageReport={onRemoveDamageReport}
+                  />
+                );
+              })}
+
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={onAddDamageReport}
+              >
+                + Add Damage Report
+              </Button>
+            </div>
+          </>
+        ) : (
+          <FileInput
+            label="Hookup View"
+            name="hookupPhoto"
+            onFileChange={onFileChange}
+            selectedFile={files.hookupPhoto}
+            error={errors.hookupPhoto}
+          />
         )}
 
-        <Button type="submit">Submit</Button>
-      </div>
-    </form>
+        <Button type="submit" error={formError}>
+          Submit
+        </Button>
+      </form>
+    </div>
   );
 };
 
