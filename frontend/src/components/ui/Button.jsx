@@ -21,7 +21,7 @@ const Button = ({
   return (
     <div className="flex flex-col items-center">
       {error && (
-        <div className="text-red-500 font-semibold text-center break-words pb-3">
+        <div className="text-red-500 font-semibold text-center md:w-xs break-words pb-3">
           {error}
         </div>
       )}

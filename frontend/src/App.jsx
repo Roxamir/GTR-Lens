@@ -13,6 +13,7 @@ import PhotosPage from "./pages/PhotosPage";
 import UploadPage from "./pages/UploadPage";
 import EquipmentListPage from "./pages/EquipmentPage";
 import EquipmentDetailPage from "./pages/EquipmentDetailPage";
+import DamageReportPage from "./pages/DamageReportPage";
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "upload",
         element: <UploadPage />,
+      },
+      {
+        path: "damage-report",
+        element: <DamageReportPage />,
       },
     ],
   },

@@ -5,9 +5,11 @@ import {
   validateIsNumber,
   validateLength,
 } from "../utils/validators";
-import PhotoUploaderForm from "../components/ui/PhotoUploaderForm";
+import PhotoUploadSection from "../components/ui/PhotoUploadSection";
 import { validateInput } from "../utils/validateInput";
 import { useSearchParams } from "react-router-dom";
+import Button from "../components/ui/Button";
+import DamageReportSection from "../components/ui/DamageReportSection";
 
 const contractIdValidators = [
   validateRequired,
@@ -73,10 +75,7 @@ const UploadPage = () => {
   }, [uploadType]);
 
   const handleAddDamageReport = () => {
-    setDamageReports([
-      ...damageReports,
-      { damage_type: "OTHER", notes: "" },
-    ]);
+    setDamageReports([...damageReports, { damage_type: "OTHER", notes: "" }]);
   };
 
   const handleRemoveDamageReport = (indexToRemove) => {
@@ -110,9 +109,28 @@ const UploadPage = () => {
 
     const contractIdError = validateInput(contractIdValidators, contractId);
 
-    // check contract ID
+    // validate contractID
     if (contractIdError) {
       newErrors.contractId = contractIdError;
+    }
+
+    // Validate damage report notes
+    const damageReportErrors = damageReports.map((report) => {
+      const reportErrors = {};
+
+      if (!report.notes || report.notes.trim() === "") {
+        reportErrors.notes = "Notes are required";
+      }
+
+      return Object.keys(reportErrors).length > 0 ? reportErrors : null;
+    });
+
+    const hasDamageReportErrors = damageReportErrors.some(
+      (error) => error !== null
+    );
+
+    if (hasDamageReportErrors) {
+      newErrors.damageReports = damageReportErrors;
     }
 
     // check file uploads
@@ -171,25 +189,48 @@ const UploadPage = () => {
   return (
     <div className="p-8 max-w-lg mx-auto">
       <h1 className="text-3xl font-bold mb-6">Upload Equipment Photos</h1>
+      <form onSubmit={handleSubmit}>
+        <div className="pb-3">
+          <PhotoUploadSection
+            contractId={contractId}
+            onContractIdChange={(e) => setContractId(e.target.value)}
+            equipmentList={equipmentList}
+            selectedEquipment={selectedEquipment}
+            onEquipmentSelect={setSelectedEquipment}
+            errors={errors}
+            onFileChange={handleFileChange}
+            files={files}
+            uploadType={uploadType}
+            setUploadType={setUploadType}
+          />
+        </div>
 
-      <PhotoUploaderForm
-        contractId={contractId}
-        onContractIdChange={(e) => setContractId(e.target.value)}
-        equipmentList={equipmentList}
-        selectedEquipment={selectedEquipment}
-        onEquipmentSelect={setSelectedEquipment}
-        onSubmit={handleSubmit}
-        errors={errors}
-        damageReports={damageReports}
-        onAddDamageReport={handleAddDamageReport}
-        onDamageReportChange={handleDamageReportChange}
-        onRemoveDamageReport={handleRemoveDamageReport}
-        onFileChange={handleFileChange}
-        files={files}
-        uploadType={uploadType}
-        setUploadType={setUploadType}
-        formError={formError}
-      />
+        <div className="flex flex-col items-center space-y-3 pb-3">
+          {damageReports.map((report, index) => {
+            return (
+              <DamageReportSection
+                key={index}
+                index={index}
+                reportData={report}
+                onDamageReportChange={handleDamageReportChange}
+                onRemoveDamageReport={handleRemoveDamageReport}
+                errors={errors.damageReports?.[index]}
+              />
+            );
+          })}
+
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={handleAddDamageReport}
+          >
+            + Add Damage Report
+          </Button>
+        </div>
+        <Button type="submit" error={formError}>
+          Submit
+        </Button>
+      </form>
 
       {/* A small panel to display the current selection for testing */}
       {selectedEquipment && (

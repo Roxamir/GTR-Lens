@@ -1,4 +1,4 @@
-import Button from "../ui/Button";
+import Button from "./Button";
 
 const DAMAGE_TYPES = [
   { value: "SCRATCH", label: "Scratch/Scuff" },
@@ -16,11 +16,12 @@ const DAMAGE_LOCATIONS = [
   { value: "OTHER", label: "Other" },
 ];
 
-const DamageReportForm = ({
+const DamageReportSection = ({
   index,
   reportData,
   onDamageReportChange,
   onRemoveDamageReport,
+  errors,
 }) => {
   return (
     <div className="w-full border border-red-500 p-4 rounded-md space-y-4">
@@ -99,12 +100,17 @@ const DamageReportForm = ({
           value={reportData.notes}
           onChange={(e) => onDamageReportChange(index, "notes", e.target.value)}
           rows="3"
-          className="w-full border rounded-md p-2 bg-slate-800 text-white"
+          className={`w-full border rounded-md p-2 bg-slate-800 text-white ${
+            errors?.notes ? "border-red-500" : "border-gray-500"
+          }`}
           placeholder="Describe the damage..."
         />
+        {errors?.notes && (
+          <span className="text-red-600 text-sm mt-1">{errors.notes}</span>
+        )}
       </div>
     </div>
   );
 };
 
-export default DamageReportForm;
+export default DamageReportSection;

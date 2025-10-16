@@ -1,30 +1,23 @@
-import SearchableDropdown from "../ui/SearchableDropdown";
-import InputField from "../ui/InputField";
+import SearchableDropdown from "./SearchableDropdown";
+import InputField from "./InputField";
 import Button from "./Button";
-import DamageReportForm from "./DamageReportForm";
 import FileInput from "./FileInput";
 
-const PhotoUploaderForm = ({
+const PhotoUploadSection = ({
   contractId,
   onContractIdChange,
   equipmentList,
   selectedEquipment,
   onEquipmentSelect,
-  damageReports,
   files,
   errors,
-  formError,
   uploadType,
   setUploadType,
-  onAddDamageReport,
-  onRemoveDamageReport,
-  onDamageReportChange,
   onFileChange,
-  onSubmit,
 }) => {
   return (
-    <div className="flex flex-col m-auto w-full max-w-md rounded-xl bg-slate-900 p-6 items-center shadow-lg">
-      <form onSubmit={onSubmit} className="space-y-6 w-96">
+    <div className="">
+      <div className="flex flex-col m-auto w-full rounded-xl bg-slate-900 p-6 items-center shadow-lg">
         <SearchableDropdown
           options={equipmentList}
           selected={selectedEquipment}
@@ -94,28 +87,6 @@ const PhotoUploaderForm = ({
               error={errors.rightPhoto}
               selectedFile={files.rightPhoto}
             />
-
-            <div className="flex flex-col items-center space-y-3">
-              {damageReports.map((report, index) => {
-                return (
-                  <DamageReportForm
-                    key={index}
-                    index={index}
-                    reportData={report}
-                    onDamageReportChange={onDamageReportChange}
-                    onRemoveDamageReport={onRemoveDamageReport}
-                  />
-                );
-              })}
-
-              <Button
-                variant="secondary"
-                type="button"
-                onClick={onAddDamageReport}
-              >
-                + Add Damage Report
-              </Button>
-            </div>
           </>
         ) : (
           <FileInput
@@ -126,13 +97,9 @@ const PhotoUploaderForm = ({
             error={errors.hookupPhoto}
           />
         )}
-
-        <Button type="submit" error={formError}>
-          Submit
-        </Button>
-      </form>
+      </div>
     </div>
   );
 };
 
-export default PhotoUploaderForm;
+export default PhotoUploadSection;
