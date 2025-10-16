@@ -19,9 +19,11 @@ const Button = ({
   const Component = as === "link" ? Link : "button";
 
   return (
-    <div className="flex flex-col items-center space-y-4 pt-4 border-t border-gray-700 w-full max-w-full break-words">
+    <div className="flex flex-col items-center">
       {error && (
-        <div className="text-red-500 font-semibold text-center">{error}</div>
+        <div className="text-red-500 font-semibold text-center break-words pb-3">
+          {error}
+        </div>
       )}
 
       <Component

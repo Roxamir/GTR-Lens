@@ -75,7 +75,7 @@ const UploadPage = () => {
   const handleAddDamageReport = () => {
     setDamageReports([
       ...damageReports,
-      { damage_type: "OTHER", notes: "" }, //
+      { damage_type: "OTHER", notes: "" },
     ]);
   };
 
