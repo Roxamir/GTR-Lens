@@ -1,4 +1,5 @@
 import Button from "./Button";
+import FileInput from "./FileInput";
 
 const DAMAGE_TYPES = [
   { value: "SCRATCH", label: "Scratch/Scuff" },
@@ -21,20 +22,28 @@ const DamageReportSection = ({
   reportData,
   onDamageReportChange,
   onRemoveDamageReport,
-  errors,
+  onPhotoChange,
+  errors = {},
+  showRemove = true,
 }) => {
+  const handlePhotoChange = (event) => {
+    const file = event.target.files[0];
+    onPhotoChange(index, file);
+  };
   return (
     <div className="w-full border border-red-500 p-4 rounded-md space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="font-bold text-red-500">Damage Report #{index + 1}</h3>
-        <Button
-          variant="secondary"
-          type="button"
-          onClick={() => onRemoveDamageReport(index)}
-          className="py-1 px-2 text-xs"
-        >
-          Remove
-        </Button>
+        {showRemove && (
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => onRemoveDamageReport(index)}
+            className="py-1 px-2 text-xs"
+          >
+            Remove
+          </Button>
+        )}
       </div>
 
       {/* Damage Location Dropdown */}
@@ -109,6 +118,14 @@ const DamageReportSection = ({
           <span className="text-red-600 text-sm mt-1">{errors.notes}</span>
         )}
       </div>
+
+      <FileInput
+        label="Photo of Damage"
+        name="damagePhoto"
+        onFileChange={handlePhotoChange}
+        selectedFile={reportData.photo}
+        error={errors.photo}
+      />
     </div>
   );
 };

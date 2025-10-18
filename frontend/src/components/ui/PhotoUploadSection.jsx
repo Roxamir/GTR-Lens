@@ -1,6 +1,5 @@
 import SearchableDropdown from "./SearchableDropdown";
 import InputField from "./InputField";
-import Button from "./Button";
 import FileInput from "./FileInput";
 
 const PhotoUploadSection = ({
@@ -18,23 +17,27 @@ const PhotoUploadSection = ({
   return (
     <div className="">
       <div className="flex flex-col m-auto w-full rounded-xl bg-slate-900 p-6 items-center shadow-lg">
-        <SearchableDropdown
-          options={equipmentList}
-          selected={selectedEquipment}
-          onSelect={onEquipmentSelect}
-          label="Select Equipment"
-          displayKey="name"
-          error={errors.equipment}
-        />
-        <InputField
-          label="Contract ID"
-          name="contractId"
-          type="text"
-          value={contractId}
-          onChange={onContractIdChange}
-          error={errors.contractId}
-        />
-        <div className="space-x-2 items-center">
+        <div className="w-full">
+          <div>
+            <SearchableDropdown
+              options={equipmentList}
+              selected={selectedEquipment}
+              onSelect={onEquipmentSelect}
+              label="Select Equipment"
+              displayKey="name"
+              error={errors.equipment}
+            />
+          </div>
+          <InputField
+            label="Contract ID"
+            name="contractId"
+            type="text"
+            value={contractId}
+            onChange={onContractIdChange}
+            error={errors.contractId}
+          />
+        </div>
+        <div className="space-x-2 items-center mb-3">
           <label>
             <input
               type="radio"

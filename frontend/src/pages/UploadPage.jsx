@@ -10,6 +10,7 @@ import { validateInput } from "../utils/validateInput";
 import { useSearchParams } from "react-router-dom";
 import Button from "../components/ui/Button";
 import DamageReportSection from "../components/ui/DamageReportSection";
+import useDamageReports from "../hooks/useDamageReports";
 
 const contractIdValidators = [
   validateRequired,
@@ -23,7 +24,6 @@ const UploadPage = () => {
   const [equipmentList, setEquipmentList] = useState([]);
   const [selectedEquipment, setSelectedEquipment] = useState(null);
   const [errors, setErrors] = useState({});
-  const [damageReports, setDamageReports] = useState([]);
   const [files, setFiles] = useState({
     frontPhoto: null,
     rearPhoto: null,
@@ -36,6 +36,17 @@ const UploadPage = () => {
   const [searchParams] = useSearchParams();
   const preSelectedId = searchParams.get("equipment");
   const preSelectedType = searchParams.get("type");
+
+  const {
+    damageReports,
+    addDamageReport,
+    removeDamageReport,
+    updateDamageReport,
+    updateDamagePhoto,
+    clearDamageReports,
+  } = useDamageReports([
+    { damage_type: "OTHER", damage_location: "OTHER", notes: "", photo: null },
+  ]);
 
   // Fetch the list of equipment when the page loads
   useEffect(() => {
@@ -70,27 +81,8 @@ const UploadPage = () => {
       hookupPhoto: null,
     });
 
-    // Remove damage reports when uploadType changes
-    setDamageReports([]);
-  }, [uploadType]);
-
-  const handleAddDamageReport = () => {
-    setDamageReports([...damageReports, { damage_type: "OTHER", notes: "" }]);
-  };
-
-  const handleRemoveDamageReport = (indexToRemove) => {
-    setDamageReports(damageReports.filter((_, i) => i !== indexToRemove));
-  };
-
-  const handleDamageReportChange = (index, field, value) => {
-    const newDamageReports = damageReports.map((report, i) => {
-      if (i === index) {
-        return { ...report, [field]: value };
-      }
-      return report;
-    });
-    setDamageReports(newDamageReports);
-  };
+    clearDamageReports();
+  }, [uploadType, clearDamageReports]);
 
   const handleFileChange = (event) => {
     const { name, files: selectedFiles } = event.target;
@@ -120,6 +112,18 @@ const UploadPage = () => {
 
       if (!report.notes || report.notes.trim() === "") {
         reportErrors.notes = "Notes are required";
+      }
+
+      // Validate photo if present
+      if (!report.photo) {
+        reportErrors.photo = "Photo is required";
+      } else {
+        // Only validate size if photo exists
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (report.photo.size > maxSize) {
+          reportErrors.photo = "Photo must be less than 5MB";
+        }
       }
 
       return Object.keys(reportErrors).length > 0 ? reportErrors : null;
@@ -177,10 +181,21 @@ const UploadPage = () => {
     if (files.hookupPhoto)
       formData.append("hookup_view_photo", files.hookupPhoto);
 
+    // Process damage reports
     if (damageReports.length > 0) {
-      formData.append("damage_reports", JSON.stringify(damageReports));
+      // Create copy without photos for JSON
+      const reportsForJson = damageReports.map(({ photo: _, ...rest }) => rest);
+      formData.append("damage_reports", JSON.stringify(reportsForJson));
+
+      // Append photos separately
+      damageReports.forEach((report, index) => {
+        if (report.photo) {
+          formData.append(`damage_photo_${index}`, report.photo);
+        }
+      });
     }
 
+    // Debug: log FormData contents
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
@@ -212,18 +227,15 @@ const UploadPage = () => {
                 key={index}
                 index={index}
                 reportData={report}
-                onDamageReportChange={handleDamageReportChange}
-                onRemoveDamageReport={handleRemoveDamageReport}
+                onDamageReportChange={updateDamageReport}
+                onRemoveDamageReport={removeDamageReport}
+                onPhotoChange={updateDamagePhoto}
                 errors={errors.damageReports?.[index]}
               />
             );
           })}
 
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={handleAddDamageReport}
-          >
+          <Button variant="secondary" type="button" onClick={addDamageReport}>
             + Add Damage Report
           </Button>
         </div>

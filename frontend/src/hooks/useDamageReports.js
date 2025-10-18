@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 function useDamageReports(initialReports = []) {
   const [damageReports, setDamageReports] = useState(initialReports);
@@ -6,7 +6,12 @@ function useDamageReports(initialReports = []) {
   const addDamageReport = () => {
     setDamageReports([
       ...damageReports,
-      { damage_type: "OTHER", damage_location: "OTHER", notes: "" },
+      {
+        damage_type: "OTHER",
+        damage_location: "OTHER",
+        notes: "",
+        photo: null,
+      },
     ]);
   };
 
@@ -24,15 +29,26 @@ function useDamageReports(initialReports = []) {
     setDamageReports(newDamageReports);
   };
 
-  const clearDamageReports = () => {
-    setDamageReports([]);
+  const updateDamagePhoto = (index, file) => {
+    const newDamageReports = damageReports.map((report, i) => {
+      if (i === index) {
+        return { ...report, photo: file };
+      }
+      return report;
+    });
+    setDamageReports(newDamageReports);
   };
+
+  const clearDamageReports = useCallback(() => {
+    setDamageReports([]);
+  }, []);
 
   return {
     damageReports,
     addDamageReport,
     removeDamageReport,
     updateDamageReport,
+    updateDamagePhoto,
     clearDamageReports,
   };
 }

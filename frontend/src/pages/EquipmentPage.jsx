@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getEquipmentList } from "../services/apiService";
 import SearchBar from "../components/ui/SearchBar";
 import EquipmentList from "../components/ui/EquipmentList";
-import PageLayout from "../components/layout/Layout";
+import PageLayout from "../components/layout/PageLayout";
 
 const EquipmentPage = () => {
   const [equipmentList, setEquipmentList] = useState([]);

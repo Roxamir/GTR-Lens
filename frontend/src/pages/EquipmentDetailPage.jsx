@@ -4,7 +4,7 @@ import { getPhotos, getEquipmentList } from "../services/apiService";
 import { HiArrowLeftCircle } from "react-icons/hi2";
 import ImageModal from "../components/ui/ImageModal";
 import Button from "../components/ui/Button";
-import PageLayout from "../components/layout/Layout";
+import PageLayout from "../components/layout/PageLayout";
 import PhotoList from "../components/ui/PhotoList";
 import EquipmentInfo from "../components/ui/EquipmentInfo";
 import DamageReportList from "../components/ui/DamageReportList";

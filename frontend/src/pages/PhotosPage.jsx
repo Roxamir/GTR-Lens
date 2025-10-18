@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getPhotos } from "../services/apiService";
 import PhotoList from "../components/ui/PhotoList";
-import PageLayout from "../components/layout/Layout";
+import PageLayout from "../components/layout/PageLayout";
 import Pagination from "../components/ui/Pagination";
 import ImageModal from "../components/ui/ImageModal";
 
