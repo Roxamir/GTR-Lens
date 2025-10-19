@@ -17,11 +17,11 @@ const EquipmentDetailPage = () => {
   const [photos, setPhotos] = useState([]);
   const [damageReports, setDamageReports] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [displayCount, setDisplayCount] = useState(1);
+  const [displayCount, setDisplayCount] = useState(4);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLoadMore = () => {
-    setDisplayCount((prev) => prev + 1);
+    setDisplayCount((prev) => prev + 4);
   };
 
   useEffect(() => {

@@ -1,7 +1,6 @@
-import { HiOutlineTrash } from "react-icons/hi2";
 import { formatDate } from "../../utils/formatDate";
 
-const PhotoCard = ({ photo, onDelete, setSelectedImage }) => {
+const PhotoCard = ({ photo, setSelectedImage }) => {
   const imageUrl = photo.image;
 
   const formattedDate = formatDate(photo.timestamp);
@@ -17,13 +16,6 @@ const PhotoCard = ({ photo, onDelete, setSelectedImage }) => {
           alt={`Photo of ${photo.equipment.name}`}
           className="w-full h-48 object-cover"
         />
-        {/* Delete button appears on hover */}
-        <button
-          onClick={() => onDelete(photo.id)}
-          className="absolute top-2 right-2 bg-red-600/50 p-1 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-          <HiOutlineTrash className="w-5 h-5" />
-        </button>
       </div>
 
       <div className="p-4">

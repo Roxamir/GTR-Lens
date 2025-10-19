@@ -98,6 +98,10 @@ const NavBar = () => {
               <HiPhoto className="h-6 w-6" />
               <span className="text-xs">Photos</span>
             </NavItem>
+            <NavItem to="/damage-report" onClick={() => setIsMenuOpen(false)}>
+              <HiExclamationTriangle className="w-6 h-6" />
+              <span className="text-xs ">+Damage</span>
+            </NavItem>
 
             <Button as="link" to="/login" onClick={closeMenu}>
               Login
