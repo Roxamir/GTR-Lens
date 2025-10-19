@@ -4,7 +4,7 @@ import { getPhotos, getEquipmentList } from "../services/apiService";
 import { HiArrowLeftCircle } from "react-icons/hi2";
 import ImageModal from "../components/ui/ImageModal";
 import Button from "../components/ui/Button";
-import PageLayout from "../components/layout/Layout";
+import PageLayout from "../components/layout/PageLayout";
 import PhotoList from "../components/ui/PhotoList";
 import EquipmentInfo from "../components/ui/EquipmentInfo";
 import DamageReportList from "../components/ui/DamageReportList";
@@ -17,11 +17,11 @@ const EquipmentDetailPage = () => {
   const [photos, setPhotos] = useState([]);
   const [damageReports, setDamageReports] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [displayCount, setDisplayCount] = useState(1);
+  const [displayCount, setDisplayCount] = useState(4);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLoadMore = () => {
-    setDisplayCount((prev) => prev + 1);
+    setDisplayCount((prev) => prev + 4);
   };
 
   useEffect(() => {

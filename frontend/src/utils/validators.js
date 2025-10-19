@@ -18,3 +18,12 @@ export const validateLength = (value, length) => {
   }
   return null;
 };
+
+export const validateCredentials = (
+  username,
+  password,
+  usernameAttempt,
+  passwordAttempt
+) => {
+  return username === usernameAttempt && password === passwordAttempt;
+};

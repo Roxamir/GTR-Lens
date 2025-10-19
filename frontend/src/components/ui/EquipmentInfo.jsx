@@ -31,14 +31,24 @@ const EquipmentInfo = ({ equipment }) => {
 
       <div className="flex flex-col shrink-0 gap-4">
         <Button
+          className="w-30 md:w-44"
           onClick={() => navigate(`/upload?equipment=${equipment.id}&type=IN`)}
         >
           Check-In
         </Button>
         <Button
+          className="w-30 md:w-44"
           onClick={() => navigate(`/upload?equipment=${equipment.id}&type=OUT`)}
         >
+          {" "}
           Check-Out
+        </Button>
+
+        <Button
+          className="w-30 md:w-44"
+          onClick={() => navigate(`/damage-report?equipment=${equipment.id}`)}
+        >
+          + Damage Report
         </Button>
       </div>
     </div>

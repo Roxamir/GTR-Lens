@@ -1,28 +1,12 @@
-import { useState, useEffect } from "react";
-import { getEquipmentList } from "../services/apiService";
+import { useState } from "react";
 import SearchBar from "../components/ui/SearchBar";
 import EquipmentList from "../components/ui/EquipmentList";
-import PageLayout from "../components/layout/Layout";
+import PageLayout from "../components/layout/PageLayout";
+import useEquipment from "../hooks/useEquipment";
 
 const EquipmentPage = () => {
-  const [equipmentList, setEquipmentList] = useState([]);
+  const { equipmentList, error } = useEquipment();
   const [searchText, setSearchText] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchEquipment = async () => {
-      try {
-        const data = await getEquipmentList();
-        setEquipmentList(data.results);
-      } catch (error) {
-        console.error("Error fetching equipment:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEquipment();
-  }, []);
 
   const filteredEquipment = equipmentList.filter((equipment) => {
     return equipment.name.toLowerCase().includes(searchText.toLowerCase());
@@ -36,11 +20,9 @@ const EquipmentPage = () => {
         <SearchBar searchText={searchText} setSearchText={setSearchText} />
       </div>
 
-      {loading ? (
-        <div className="text-center text-gray-500 mt-8">Loading...</div>
-      ) : (
-        <EquipmentList equipment={filteredEquipment} />
-      )}
+      {error && <div className="text-center text-red-500 mt-8">{error}</div>}
+
+      <EquipmentList equipment={filteredEquipment} />
     </PageLayout>
   );
 };

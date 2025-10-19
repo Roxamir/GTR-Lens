@@ -6,6 +6,7 @@ const Button = ({
   variant = "primary",
   className = "",
   as = "button",
+  error,
   ...props
 }) => {
   const baseStyles =
@@ -18,12 +19,20 @@ const Button = ({
   const Component = as === "link" ? Link : "button";
 
   return (
-    <Component
-      className={cn(baseStyles, variantStyles[variant], className)}
-      {...props}
-    >
-      {children}
-    </Component>
+    <div className="flex flex-col items-center">
+      {error && (
+        <div className="text-red-500 font-semibold text-center md:w-xs break-words pb-3">
+          {error}
+        </div>
+      )}
+
+      <Component
+        className={cn(baseStyles, variantStyles[variant], className)}
+        {...props}
+      >
+        {children}
+      </Component>
+    </div>
   );
 };
 

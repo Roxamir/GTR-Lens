@@ -1,4 +1,4 @@
-import PageLayout from "../components/layout/Layout";
+import PageLayout from "../components/layout/PageLayout";
 import Button from "../components/ui/Button";
 
 const HomePage = () => {
@@ -27,6 +27,14 @@ const HomePage = () => {
           className="py-8 text-4xl w-full text-center"
         >
           View Photos
+        </Button>
+
+        <Button
+          as="link"
+          to="/damage-report"
+          className="py-8 text-4xl w-full text-center"
+        >
+          Damage Report
         </Button>
       </div>
     </PageLayout>

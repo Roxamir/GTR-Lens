@@ -6,6 +6,7 @@ import {
   HiPhoto,
   HiOutlineBars3,
   HiOutlineXMark,
+  HiExclamationTriangle,
 } from "react-icons/hi2";
 
 import Button from "../ui/Button";
@@ -57,6 +58,10 @@ const NavBar = () => {
           <HiPhoto className="w-6 h-6" />
           <span className="text-xs">Photos</span>
         </NavItem>
+        <NavItem to="/damage-report">
+          <HiExclamationTriangle className="w-6 h-6" />
+          <span className="text-xs ">+Damage</span>
+        </NavItem>
       </nav>
 
       {/*Desktop Login Button*/}
@@ -92,6 +97,10 @@ const NavBar = () => {
             <NavItem to="/photos" onClick={() => setIsMenuOpen(false)}>
               <HiPhoto className="h-6 w-6" />
               <span className="text-xs">Photos</span>
+            </NavItem>
+            <NavItem to="/damage-report" onClick={() => setIsMenuOpen(false)}>
+              <HiExclamationTriangle className="w-6 h-6" />
+              <span className="text-xs ">+Damage</span>
             </NavItem>
 
             <Button as="link" to="/login" onClick={closeMenu}>

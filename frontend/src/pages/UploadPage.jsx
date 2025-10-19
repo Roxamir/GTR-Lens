@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import { getEquipmentList } from "../services/apiService";
 import {
   validateRequired,
   validateIsNumber,
   validateLength,
 } from "../utils/validators";
-import PhotoUploaderForm from "../components/ui/PhotoUploaderForm";
+import PhotoUploadSection from "../components/ui/PhotoUploadSection";
 import { validateInput } from "../utils/validateInput";
 import { useSearchParams } from "react-router-dom";
+import Button from "../components/ui/Button";
+import DamageReportSection from "../components/ui/DamageReportSection";
+import useDamageReports from "../hooks/useDamageReports";
+import useEquipment from "../hooks/useEquipment";
 
 const contractIdValidators = [
   validateRequired,
@@ -18,10 +21,7 @@ const contractIdValidators = [
 const UploadPage = () => {
   // State for the form data
   const [contractId, setContractId] = useState("");
-  const [equipmentList, setEquipmentList] = useState([]);
-  const [selectedEquipment, setSelectedEquipment] = useState(null);
   const [errors, setErrors] = useState({});
-  const [damageReports, setDamageReports] = useState([]);
   const [files, setFiles] = useState({
     frontPhoto: null,
     rearPhoto: null,
@@ -35,28 +35,33 @@ const UploadPage = () => {
   const preSelectedId = searchParams.get("equipment");
   const preSelectedType = searchParams.get("type");
 
-  // Fetch the list of equipment when the page loads
-  useEffect(() => {
-    const fetchEquipment = async () => {
-      try {
-        const data = await getEquipmentList();
-        setEquipmentList(data.results);
-        if (preSelectedId) {
-          const equipment = data.results.find(
-            (eq) => eq.id === parseInt(preSelectedId)
-          );
-          setSelectedEquipment(equipment);
-        }
-        if (preSelectedType) {
-          setUploadType(preSelectedType);
-        }
-      } catch (error) {
-        console.error("Error fetching equipment:", error);
-      }
-    };
+  const { equipmentList, selectedEquipment, setSelectedEquipment, error } =
+    useEquipment(preSelectedId);
 
-    fetchEquipment();
-  }, [preSelectedId, preSelectedType]);
+  const {
+    damageReports,
+    addDamageReport,
+    removeDamageReport,
+    updateDamageReport,
+    updateDamagePhoto,
+    clearDamageReports,
+  } = useDamageReports([
+    { damage_type: "OTHER", damage_location: "OTHER", notes: "", photo: null },
+  ]);
+
+  useEffect(() => {
+    if (preSelectedType) {
+      const validTypes = ["IN", "OUT"];
+      const normalizedType = preSelectedType.toUpperCase();
+
+      if (validTypes.includes(normalizedType)) {
+        setUploadType(normalizedType);
+      } else {
+        // Invalid type defaults to "OUT"
+        setUploadType("OUT");
+      }
+    }
+  }, [preSelectedType]);
 
   useEffect(() => {
     // Reset all files back to null when uploadType changes
@@ -68,30 +73,8 @@ const UploadPage = () => {
       hookupPhoto: null,
     });
 
-    // Remove damage reports when uploadType changes
-    setDamageReports([]);
-  }, [uploadType]);
-
-  const handleAddDamageReport = () => {
-    setDamageReports([
-      ...damageReports,
-      { damage_type: "OTHER", notes: "" }, //
-    ]);
-  };
-
-  const handleRemoveDamageReport = (indexToRemove) => {
-    setDamageReports(damageReports.filter((_, i) => i !== indexToRemove));
-  };
-
-  const handleDamageReportChange = (index, field, value) => {
-    const newDamageReports = damageReports.map((report, i) => {
-      if (i === index) {
-        return { ...report, [field]: value };
-      }
-      return report;
-    });
-    setDamageReports(newDamageReports);
-  };
+    clearDamageReports();
+  }, [uploadType, clearDamageReports]);
 
   const handleFileChange = (event) => {
     const { name, files: selectedFiles } = event.target;
@@ -110,9 +93,40 @@ const UploadPage = () => {
 
     const contractIdError = validateInput(contractIdValidators, contractId);
 
-    // check contract ID
+    // validate contractID
     if (contractIdError) {
       newErrors.contractId = contractIdError;
+    }
+
+    // Validate damage report notes
+    const damageReportErrors = damageReports.map((report) => {
+      const reportErrors = {};
+
+      if (!report.notes || report.notes.trim() === "") {
+        reportErrors.notes = "Notes are required";
+      }
+
+      // Validate photo if present
+      if (!report.photo) {
+        reportErrors.photo = "Photo is required";
+      } else {
+        // Only validate size if photo exists
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (report.photo.size > maxSize) {
+          reportErrors.photo = "Photo must be less than 5MB";
+        }
+      }
+
+      return Object.keys(reportErrors).length > 0 ? reportErrors : null;
+    });
+
+    const hasDamageReportErrors = damageReportErrors.some(
+      (error) => error !== null
+    );
+
+    if (hasDamageReportErrors) {
+      newErrors.damageReports = damageReportErrors;
     }
 
     // check file uploads
@@ -159,10 +173,21 @@ const UploadPage = () => {
     if (files.hookupPhoto)
       formData.append("hookup_view_photo", files.hookupPhoto);
 
+    // Process damage reports
     if (damageReports.length > 0) {
-      formData.append("damage_reports", JSON.stringify(damageReports));
+      // Create copy without photos for JSON
+      const reportsForJson = damageReports.map(({ photo: _, ...rest }) => rest);
+      formData.append("damage_reports", JSON.stringify(reportsForJson));
+
+      // Append photos separately
+      damageReports.forEach((report, index) => {
+        if (report.photo) {
+          formData.append(`damage_photo_${index}`, report.photo);
+        }
+      });
     }
 
+    // Debug: log FormData contents
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
@@ -172,24 +197,52 @@ const UploadPage = () => {
     <div className="p-8 max-w-lg mx-auto">
       <h1 className="text-3xl font-bold mb-6">Upload Equipment Photos</h1>
 
-      <PhotoUploaderForm
-        contractId={contractId}
-        onContractIdChange={(e) => setContractId(e.target.value)}
-        equipmentList={equipmentList}
-        selectedEquipment={selectedEquipment}
-        onEquipmentSelect={setSelectedEquipment}
-        onSubmit={handleSubmit}
-        errors={errors}
-        damageReports={damageReports}
-        onAddDamageReport={handleAddDamageReport}
-        onDamageReportChange={handleDamageReportChange}
-        onRemoveDamageReport={handleRemoveDamageReport}
-        onFileChange={handleFileChange}
-        files={files}
-        uploadType={uploadType}
-        setUploadType={setUploadType}
-        formError={formError}
-      />
+      {error && (
+        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <p className="font-bold">Error loading equipment</p>
+          <p>{error}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <div className="pb-3">
+          <PhotoUploadSection
+            contractId={contractId}
+            onContractIdChange={(e) => setContractId(e.target.value)}
+            equipmentList={equipmentList}
+            selectedEquipment={selectedEquipment}
+            onEquipmentSelect={setSelectedEquipment}
+            errors={errors}
+            onFileChange={handleFileChange}
+            files={files}
+            uploadType={uploadType}
+            setUploadType={setUploadType}
+          />
+        </div>
+
+        <div className="flex flex-col items-center space-y-3 pb-3">
+          {damageReports.map((report, index) => {
+            return (
+              <DamageReportSection
+                key={index}
+                index={index}
+                reportData={report}
+                onDamageReportChange={updateDamageReport}
+                onRemoveDamageReport={removeDamageReport}
+                onPhotoChange={updateDamagePhoto}
+                errors={errors.damageReports?.[index]}
+              />
+            );
+          })}
+
+          <Button variant="secondary" type="button" onClick={addDamageReport}>
+            + Add Damage Report
+          </Button>
+        </div>
+        <Button type="submit" error={formError}>
+          Submit
+        </Button>
+      </form>
 
       {/* A small panel to display the current selection for testing */}
       {selectedEquipment && (
