@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
 import { getEquipmentList } from "../services/apiService";
 
-function useEquipmentSelection(preSelectedId) {
+function useEquipment(preSelectedId) {
   const [equipmentList, setEquipmentList] = useState([]);
   const [selectedEquipment, setSelectedEquipment] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchEquipment = async () => {
       try {
-        setLoading(true);
         const data = await getEquipmentList();
         setEquipmentList(data.results);
 
@@ -23,8 +21,6 @@ function useEquipmentSelection(preSelectedId) {
       } catch (error) {
         console.error("Error fetching equipment:", error);
         setError(error.message);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -35,9 +31,8 @@ function useEquipmentSelection(preSelectedId) {
     equipmentList,
     selectedEquipment,
     setSelectedEquipment,
-    loading,
     error,
   };
 }
 
-export default useEquipmentSelection;
+export default useEquipment;

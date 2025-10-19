@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { getEquipmentList } from "../services/apiService";
 import {
   validateRequired,
   validateIsNumber,
@@ -11,6 +10,7 @@ import { useSearchParams } from "react-router-dom";
 import Button from "../components/ui/Button";
 import DamageReportSection from "../components/ui/DamageReportSection";
 import useDamageReports from "../hooks/useDamageReports";
+import useEquipment from "../hooks/useEquipment";
 
 const contractIdValidators = [
   validateRequired,
@@ -21,8 +21,6 @@ const contractIdValidators = [
 const UploadPage = () => {
   // State for the form data
   const [contractId, setContractId] = useState("");
-  const [equipmentList, setEquipmentList] = useState([]);
-  const [selectedEquipment, setSelectedEquipment] = useState(null);
   const [errors, setErrors] = useState({});
   const [files, setFiles] = useState({
     frontPhoto: null,
@@ -37,6 +35,9 @@ const UploadPage = () => {
   const preSelectedId = searchParams.get("equipment");
   const preSelectedType = searchParams.get("type");
 
+  const { equipmentList, selectedEquipment, setSelectedEquipment, error } =
+    useEquipment(preSelectedId);
+
   const {
     damageReports,
     addDamageReport,
@@ -48,28 +49,19 @@ const UploadPage = () => {
     { damage_type: "OTHER", damage_location: "OTHER", notes: "", photo: null },
   ]);
 
-  // Fetch the list of equipment when the page loads
   useEffect(() => {
-    const fetchEquipment = async () => {
-      try {
-        const data = await getEquipmentList();
-        setEquipmentList(data.results);
-        if (preSelectedId) {
-          const equipment = data.results.find(
-            (eq) => eq.id === parseInt(preSelectedId)
-          );
-          setSelectedEquipment(equipment);
-        }
-        if (preSelectedType) {
-          setUploadType(preSelectedType);
-        }
-      } catch (error) {
-        console.error("Error fetching equipment:", error);
-      }
-    };
+    if (preSelectedType) {
+      const validTypes = ["IN", "OUT"];
+      const normalizedType = preSelectedType.toUpperCase();
 
-    fetchEquipment();
-  }, [preSelectedId, preSelectedType]);
+      if (validTypes.includes(normalizedType)) {
+        setUploadType(normalizedType);
+      } else {
+        // Invalid type defaults to "OUT"
+        setUploadType("OUT");
+      }
+    }
+  }, [preSelectedType]);
 
   useEffect(() => {
     // Reset all files back to null when uploadType changes
@@ -204,6 +196,14 @@ const UploadPage = () => {
   return (
     <div className="p-8 max-w-lg mx-auto">
       <h1 className="text-3xl font-bold mb-6">Upload Equipment Photos</h1>
+
+      {error && (
+        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <p className="font-bold">Error loading equipment</p>
+          <p>{error}</p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
         <div className="pb-3">
           <PhotoUploadSection

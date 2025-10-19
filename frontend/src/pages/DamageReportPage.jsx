@@ -20,7 +20,7 @@ const DamageReportPage = () => {
   const [errors, setErrors] = useState({});
   const [searchParams] = useSearchParams();
 
-  const preSelectedId = searchParams.get("damage-report");
+  const preSelectedId = searchParams.get("equipment");
 
   const { equipmentList, selectedEquipment, setSelectedEquipment, error } =
     useEquipment(preSelectedId);

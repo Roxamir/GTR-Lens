@@ -40,6 +40,12 @@ const EquipmentInfo = ({ equipment }) => {
         >
           Check-Out
         </Button>
+
+        <Button
+          onClick={() => navigate(`/damage-report?equipment=${equipment.id}`)}
+        >
+          + Damage Report
+        </Button>
       </div>
     </div>
   );
