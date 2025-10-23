@@ -13,7 +13,7 @@ from .serializers import (
 
 
 class EquipmentViewSet(viewsets.ModelViewSet):
-    queryset = Equipment.objects.all()
+    queryset = Equipment.objects.all().order_by("name")
     serializer_class = EquipmentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -25,19 +25,10 @@ class EquipmentViewSet(viewsets.ModelViewSet):
         # Get the specific equipment object
         equipment = self.get_object()
 
-        # Find the most recent 'AFTER' photo for this equipment
-        latest_after_photo = (
-            ConditionPhoto.objects.filter(equipment=equipment, photo_type="AFTER")
-            .order_by("-timestamp")
-            .first()
-        )
+        latest_contract_id = equipment.get_latest_contract_identifier()
 
-        # If no photos were found, return an empty list
-        if not latest_after_photo:
+        if not latest_contract_id:
             return Response([])
-
-        # Get the contract identifier from that most recent photo
-        latest_contract_id = latest_after_photo.contract_identifier
 
         # Find all 'AFTER' photos that share that same contract identifier
         photos_for_contract = ConditionPhoto.objects.filter(
@@ -46,7 +37,7 @@ class EquipmentViewSet(viewsets.ModelViewSet):
             contract_identifier=latest_contract_id,
         ).order_by("photo_location")
 
-        # erialize the data and return it as a JSON response
+        # Serialize the data and return it as a JSON response
         serializer = ConditionPhotoSerializer(photos_for_contract, many=True)
         return Response(serializer.data)
 
@@ -114,11 +105,12 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
                 photo_file = request.FILES.get(field_name)
                 if photo_file:
                     photo = ConditionPhoto.objects.create(
-                        image=photo_file,
+                        photo=photo_file,
                         contract_identifier=contract_id,
                         photo_location=location,
                         photo_type=photo_type,
                         equipment=equipment,
+                        uploaded_by=request.user,
                     )
                     created_photos.append(photo)
 
@@ -145,6 +137,61 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
             {
                 "message": "Upload successful",
                 "photos_created": len(created_photos),
+                "damage_reports_created": len(created_reports),
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(detail=False, methods=["post"])
+    def submit_damage_reports(self, request):
+        """
+        Standalone endpoint for submitting damage reports without condition photos.
+        """
+        equipment_id = request.data.get("equipment")
+
+        if not equipment_id:
+            return Response(
+                {"error": "Equipment is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            equipment = Equipment.objects.get(id=equipment_id)
+        except Equipment.DoesNotExist:
+            return Response(
+                {"error": "Equipment not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        created_reports = []
+        damage_count = int(request.data.get("damage_report_count", 0))
+
+        if damage_count == 0:
+            return Response(
+                {"error": "At least one damage report is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            for i in range(damage_count):
+                damage_type = request.data.get(f"damage_report_{i}_type")
+                damage_location = request.data.get(f"damage_report_{i}_location")
+                notes = request.data.get(f"damage_report_{i}_notes", "")
+                photo_file = request.FILES.get(f"damage_report_{i}_photo")
+
+                if damage_type:  # Only create if type is provided
+                    report = DamageReport.objects.create(
+                        equipment=equipment,
+                        damage_type=damage_type,
+                        damage_location=damage_location,
+                        notes=notes,
+                        photo=photo_file,
+                        reported_by=request.user,
+                    )
+                    created_reports.append(report)
+
+        return Response(
+            {
+                "message": "Damage reports submitted successfully",
                 "damage_reports_created": len(created_reports),
             },
             status=status.HTTP_201_CREATED,

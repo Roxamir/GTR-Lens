@@ -12,7 +12,7 @@ const PhotosPage = () => {
   const [photos, setPhotos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPhotos, setTotalPhotos] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const totalPages = Math.ceil(totalPhotos / PAGE_SIZE);
@@ -31,23 +31,23 @@ const PhotosPage = () => {
     fetchPhotos();
   }, [currentPage]);
 
-  const handleImageSelect = (imageUrl) => {
-    setSelectedImage(imageUrl);
+  const handlePhotoSelect = (imageUrl) => {
+    setSelectedPhoto(imageUrl);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedImage(null);
+    setSelectedPhoto(null);
   };
 
   return (
     <PageLayout>
       <h1 className="text-3xl font-bold mb-8">Recent Activity</h1>
-      <PhotoList photos={photos} setSelectedImage={handleImageSelect} />
-      {selectedImage && (
+      <PhotoList photos={photos} setSelectedPhoto={handlePhotoSelect} />
+      {selectedPhoto && (
         <ImageModal
-          image={selectedImage}
+          image={selectedPhoto}
           isModalOpen={isModalOpen}
           onClose={handleCloseModal}
         />

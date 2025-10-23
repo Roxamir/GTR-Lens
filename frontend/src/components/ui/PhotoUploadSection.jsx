@@ -64,28 +64,28 @@ const PhotoUploadSection = ({
           <>
             <FileInput
               label="Front View"
-              name="frontPhoto"
+              id="frontPhoto"
               onFileChange={onFileChange}
               error={errors.frontPhoto}
               selectedFile={files.frontPhoto}
             />
             <FileInput
               label="Rear View"
-              name="rearPhoto"
+              id="rearPhoto"
               onFileChange={onFileChange}
               error={errors.rearPhoto}
               selectedFile={files.rearPhoto}
             />
             <FileInput
               label="Left Side View"
-              name="leftPhoto"
+              id="leftPhoto"
               onFileChange={onFileChange}
               error={errors.leftPhoto}
               selectedFile={files.leftPhoto}
             />
             <FileInput
               label="Right Side View"
-              name="rightPhoto"
+              id="rightPhoto"
               onFileChange={onFileChange}
               error={errors.rightPhoto}
               selectedFile={files.rightPhoto}
@@ -94,7 +94,7 @@ const PhotoUploadSection = ({
         ) : (
           <FileInput
             label="Hookup View"
-            name="hookupPhoto"
+            id="hookupPhoto"
             onFileChange={onFileChange}
             selectedFile={files.hookupPhoto}
             error={errors.hookupPhoto}

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 
-const FileInput = ({ label, name, onFileChange, error, selectedFile }) => {
+const FileInput = ({ label, id, onFileChange, error, selectedFile }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
+
   useEffect(() => {
     if (!selectedFile) {
       setPreviewUrl(null);
@@ -15,13 +16,13 @@ const FileInput = ({ label, name, onFileChange, error, selectedFile }) => {
   return (
     <div className="w-full">
       <label
-        htmlFor={name}
+        htmlFor={id}
         className="block mb-1 text-sm font-semibold text-gray-300"
       >
         {label}
       </label>
       <label
-        htmlFor={name}
+        htmlFor={id}
         className={`w-full flex items-center justify-center p-4 border-2 border-dashed rounded-md cursor-pointer
                     ${error ? "border-red-500" : "border-gray-500 hover:border-blue-400"}`}
       >
@@ -33,7 +34,7 @@ const FileInput = ({ label, name, onFileChange, error, selectedFile }) => {
                 alt="Preview"
                 className="w-full h-36 object-contain rounded-md"
               />
-              {selectedFile.name}
+              {selectedFile?.name}
             </div>
           ) : (
             <div className="text-center">
@@ -46,8 +47,8 @@ const FileInput = ({ label, name, onFileChange, error, selectedFile }) => {
         </div>
       </label>
       <input
-        id={name}
-        name={name}
+        id={id}
+        name={id}
         type="file"
         accept=".jpg,.jpeg,.png"
         onChange={onFileChange}

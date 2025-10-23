@@ -7,8 +7,8 @@ function useDamageReports(initialReports = []) {
     setDamageReports([
       ...damageReports,
       {
-        damage_type: "OTHER",
         damage_location: "OTHER",
+        damage_type: "OTHER",
         notes: "",
         photo: null,
       },
