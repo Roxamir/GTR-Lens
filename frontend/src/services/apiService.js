@@ -4,7 +4,7 @@ const getAuthToken = () => {
   return import.meta.env.VITE_API_AUTH_TOKEN;
 };
 
-export const getEquipmentList = async () => {
+const getEquipmentList = async () => {
   const token = getAuthToken();
   let url = `${API_URL}equipment/`;
   const response = await fetch(url, {
@@ -19,7 +19,7 @@ export const getEquipmentList = async () => {
   return response.json();
 };
 
-export const getPhotos = async (equipmentId = null, page = 1) => {
+const getPhotos = async (equipmentId = null, page = 1) => {
   const token = getAuthToken();
 
   let url = `${API_URL}photos/`;
@@ -48,4 +48,49 @@ export const getPhotos = async (equipmentId = null, page = 1) => {
     throw new Error("Failed to fetch photos");
   }
   return response.json();
+};
+
+const uploadConditionPhotos = async (formData) => {
+  const token = getAuthToken();
+  let url = `${API_URL}photos/bulk_upload/`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Token ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to submit form");
+  }
+
+  return response.json();
+};
+
+const uploadDamageReports = async (formData) => {
+  const token = getAuthToken();
+  const url = `${API_URL}photos/submit_damage_reports/`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Token ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to submit damage reports");
+  }
+
+  return response.json();
+};
+
+export {
+  uploadConditionPhotos,
+  getEquipmentList,
+  getPhotos,
+  uploadDamageReports,
 };

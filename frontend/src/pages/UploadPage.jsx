@@ -11,6 +11,8 @@ import Button from "../components/ui/Button";
 import DamageReportSection from "../components/ui/DamageReportSection";
 import useDamageReports from "../hooks/useDamageReports";
 import useEquipment from "../hooks/useEquipment";
+import { uploadConditionPhotos } from "../services/apiService";
+import LoadingOverlay from "../components/ui/LoadingOverlay";
 
 const contractIdValidators = [
   validateRequired,
@@ -34,6 +36,7 @@ const UploadPage = () => {
   const [searchParams] = useSearchParams();
   const preSelectedId = searchParams.get("equipment");
   const preSelectedType = searchParams.get("type");
+  const [loading, setLoading] = useState(false);
 
   const { equipmentList, selectedEquipment, setSelectedEquipment, error } =
     useEquipment(preSelectedId);
@@ -84,40 +87,32 @@ const UploadPage = () => {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const newErrors = {};
+
     if (!selectedEquipment) {
       newErrors.equipment = "Please select a piece of equipment.";
     }
 
     const contractIdError = validateInput(contractIdValidators, contractId);
-
-    // validate contractID
     if (contractIdError) {
       newErrors.contractId = contractIdError;
     }
 
-    // Validate damage report notes
     const damageReportErrors = damageReports.map((report) => {
       const reportErrors = {};
-
       if (!report.notes || report.notes.trim() === "") {
         reportErrors.notes = "Notes are required";
       }
-
-      // Validate photo if present
       if (!report.photo) {
         reportErrors.photo = "Photo is required";
       } else {
-        // Only validate size if photo exists
-        const maxSize = 5 * 1024 * 1024; // 5MB
-
+        const maxSize = 5 * 1024 * 1024;
         if (report.photo.size > maxSize) {
           reportErrors.photo = "Photo must be less than 5MB";
         }
       }
-
       return Object.keys(reportErrors).length > 0 ? reportErrors : null;
     });
 
@@ -129,42 +124,31 @@ const UploadPage = () => {
       newErrors.damageReports = damageReportErrors;
     }
 
-    // check file uploads
     if (uploadType === "IN") {
-      if (!files.frontPhoto) {
-        newErrors.frontPhoto = "Front photo is required.";
-      }
-      if (!files.rearPhoto) {
-        newErrors.rearPhoto = "Rear photo is required.";
-      }
-      if (!files.leftPhoto) {
+      if (!files.frontPhoto) newErrors.frontPhoto = "Front photo is required.";
+      if (!files.rearPhoto) newErrors.rearPhoto = "Rear photo is required.";
+      if (!files.leftPhoto)
         newErrors.leftPhoto = "Left side photo is required.";
-      }
-      if (!files.rightPhoto) {
+      if (!files.rightPhoto)
         newErrors.rightPhoto = "Right side photo is required.";
-      }
     } else if (uploadType === "OUT") {
-      if (!files.hookupPhoto) {
+      if (!files.hookupPhoto)
         newErrors.hookupPhoto = "Hookup photo is required.";
-      }
     }
 
-    // Check if any errors were found
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setFormError("Please correct the errors above before submitting.");
-      return; // Stop the submission
+      return;
     }
 
-    // otherwise, clear error state and proceed
     setErrors({});
     setFormError(null);
-    console.log(" Validation passed! Submitting form...");
 
     const formData = new FormData();
-
     formData.append("equipment", selectedEquipment.id);
     formData.append("contract_identifier", contractId);
+    formData.append("upload_type", uploadType);
 
     if (files.frontPhoto) formData.append("front_view_photo", files.frontPhoto);
     if (files.rearPhoto) formData.append("rear_view_photo", files.rearPhoto);
@@ -173,28 +157,57 @@ const UploadPage = () => {
     if (files.hookupPhoto)
       formData.append("hookup_view_photo", files.hookupPhoto);
 
-    // Process damage reports
     if (damageReports.length > 0) {
-      // Create copy without photos for JSON
-      const reportsForJson = damageReports.map(({ photo: _, ...rest }) => rest);
-      formData.append("damage_reports", JSON.stringify(reportsForJson));
-
-      // Append photos separately
+      formData.append("damage_report_count", damageReports.length);
       damageReports.forEach((report, index) => {
+        formData.append(`damage_report_${index}_type`, report.damage_type);
+        formData.append(
+          `damage_report_${index}_location`,
+          report.damage_location
+        );
+        formData.append(`damage_report_${index}_notes`, report.notes);
         if (report.photo) {
-          formData.append(`damage_photo_${index}`, report.photo);
+          formData.append(`damage_report_${index}_photo`, report.photo);
         }
       });
     }
 
-    // Debug: log FormData contents
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
+    try {
+      setLoading(true);
+      const startTime = Date.now();
+
+      await uploadConditionPhotos(formData);
+
+      const elapsed = Date.now() - startTime;
+      if (elapsed < 500) {
+        await new Promise((resolve) => setTimeout(resolve, 500 - elapsed));
+      }
+
+      setFiles({
+        frontPhoto: null,
+        rearPhoto: null,
+        leftPhoto: null,
+        rightPhoto: null,
+        hookupPhoto: null,
+      });
+      setContractId("");
+      clearDamageReports();
+      setSelectedEquipment(null);
+
+      alert("Photos uploaded successfully!");
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setFormError(
+        error.message || "Failed to upload photos. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-8 max-w-lg mx-auto">
+      <LoadingOverlay loading={loading} />
       <h1 className="text-3xl font-bold mb-6">Upload Equipment Photos</h1>
 
       {error && (

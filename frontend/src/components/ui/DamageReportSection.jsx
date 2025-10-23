@@ -121,10 +121,10 @@ const DamageReportSection = ({
 
       <FileInput
         label="Photo of Damage"
-        name="damagePhoto"
+        id={`damage-photo-${index}`}
         onFileChange={handlePhotoChange}
         selectedFile={reportData.photo}
-        error={errors.photo}
+        error={errors?.photo}
       />
     </div>
   );

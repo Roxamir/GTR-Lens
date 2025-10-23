@@ -1,14 +1,14 @@
 import { formatDate } from "../../utils/formatDate";
 
-const PhotoCard = ({ photo, setSelectedImage }) => {
-  const imageUrl = photo.image;
+const PhotoCard = ({ photo, setSelectedPhoto }) => {
+  const imageUrl = photo.photo;
 
   const formattedDate = formatDate(photo.timestamp);
 
   return (
     <div
       className="bg-slate-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105 group cursor-pointer"
-      onClick={() => setSelectedImage(imageUrl)}
+      onClick={() => setSelectedPhoto(imageUrl)}
     >
       <div className="relative">
         <img
