@@ -8,6 +8,8 @@ router.register(r"photos", views.ConditionPhotoViewSet, basename="photo")
 router.register(r"damage-reports", views.DamageReportViewSet)
 
 
+
 urlpatterns = [
     path("", include(router.urls)),
+    path("login/", views.user_login)
 ]
