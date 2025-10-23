@@ -10,6 +10,7 @@ import {
 } from "react-icons/hi2";
 
 import Button from "../ui/Button";
+import useAuth from "../../hooks/useAuth";
 
 const NavItem = ({ to, children, onClick }) => (
   <Link
@@ -26,6 +27,8 @@ const NavBar = () => {
   const closeMenu = () => setIsMenuOpen(false);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const isLoginPage = location.pathname === "/login";
+  const { logout } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between bg-slate-900 text-white px-8 z-10">
@@ -65,10 +68,14 @@ const NavBar = () => {
       </nav>
 
       {/*Desktop Login Button*/}
-      <div className="hidden md:block">
-        <Button as="link" to="/login" onClick={closeMenu}>
-          Login
-        </Button>
+      <div className="w-24 flex justify-end">
+        {" "}
+        {/* Fixed width container */}
+        {!isLoginPage && (
+          <div className="hidden md:block">
+            <Button onClick={logout}>Logout</Button>
+          </div>
+        )}
       </div>
 
       {/*Hamburger Menu*/}
@@ -103,9 +110,16 @@ const NavBar = () => {
               <span className="text-xs ">+Damage</span>
             </NavItem>
 
-            <Button as="link" to="/login" onClick={closeMenu}>
-              Login
-            </Button>
+            {!isLoginPage && (
+              <Button
+                onClick={() => {
+                  closeMenu();
+                  logout();
+                }}
+              >
+                Logout
+              </Button>
+            )}
           </nav>
         </div>
       )}
