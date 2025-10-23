@@ -12,7 +12,7 @@ const EquipmentInfo = ({ equipment }) => {
         <div className="text-sm text-gray-300">
           <span className="font-semibold">Latest Contract:</span>{" "}
           <span className="text-gray-400">
-            {equipment.latest_contract_identifier || "N/A"}
+            {equipment.latest_contract || "N/A"}
           </span>
         </div>
         <div className="text-sm text-gray-300">

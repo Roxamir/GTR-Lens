@@ -16,7 +16,7 @@ const EquipmentDetailPage = () => {
   const [equipment, setEquipment] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [damageReports, setDamageReports] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [displayCount, setDisplayCount] = useState(4);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -44,14 +44,14 @@ const EquipmentDetailPage = () => {
     fetchData();
   }, [id]);
 
-  const handleImageSelect = (imageUrl) => {
-    setSelectedImage(imageUrl);
+  const handlePhotoSelect = (imageUrl) => {
+    setSelectedPhoto(imageUrl);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedImage(null);
+    setSelectedPhoto(null);
   };
 
   const visiblePhotos = photos.slice(0, displayCount);
@@ -71,7 +71,7 @@ const EquipmentDetailPage = () => {
       <div className="mt-6">
         <PhotoList
           photos={visiblePhotos}
-          setSelectedImage={handleImageSelect}
+          setSelectedPhoto={handlePhotoSelect}
         />
         <Button
           className={`${!hasMore ? "hidden" : ""} mt-6`}
@@ -82,14 +82,14 @@ const EquipmentDetailPage = () => {
         <div className="mt-6">
           <DamageReportList
             damageReports={damageReports}
-            setSelectedImage={handleImageSelect}
+            setSelectedPhoto={handlePhotoSelect}
             className="mt-6"
           />
         </div>
 
-        {selectedImage && (
+        {selectedPhoto && (
           <ImageModal
-            image={selectedImage}
+            image={selectedPhoto}
             isModalOpen={isModalOpen}
             onClose={handleCloseModal}
           />
