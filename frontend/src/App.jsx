@@ -14,6 +14,7 @@ import UploadPage from "./pages/UploadPage";
 import EquipmentListPage from "./pages/EquipmentPage";
 import EquipmentDetailPage from "./pages/EquipmentDetailPage";
 import DamageReportPage from "./pages/DamageReportPage";
+import Protected from "./routes/Protected";
 
 const router = createBrowserRouter([
   {
@@ -23,15 +24,27 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: (
+          <Protected>
+            <HomePage />
+          </Protected>
+        ),
       },
       {
         path: "equipment",
-        element: <EquipmentListPage />,
+        element: (
+          <Protected>
+            <EquipmentListPage />
+          </Protected>
+        ),
       },
       {
         path: "equipment/:id",
-        element: <EquipmentDetailPage />,
+        element: (
+          <Protected>
+            <EquipmentDetailPage />
+          </Protected>
+        ),
       },
       {
         path: "login",
@@ -39,15 +52,27 @@ const router = createBrowserRouter([
       },
       {
         path: "photos",
-        element: <PhotosPage />,
+        element: (
+          <Protected>
+            <PhotosPage />
+          </Protected>
+        ),
       },
       {
         path: "upload",
-        element: <UploadPage />,
+        element: (
+          <Protected>
+            <UploadPage />
+          </Protected>
+        ),
       },
       {
         path: "damage-report",
-        element: <DamageReportPage />,
+        element: (
+          <Protected>
+            <DamageReportPage />
+          </Protected>
+        ),
       },
     ],
   },

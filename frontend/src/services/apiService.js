@@ -1,7 +1,7 @@
 const API_URL = "http://127.0.0.1:8000/api/";
 
 const getAuthToken = () => {
-  return import.meta.env.VITE_API_AUTH_TOKEN;
+  return localStorage.getItem("token");
 };
 
 const getEquipmentList = async () => {

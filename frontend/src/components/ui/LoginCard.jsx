@@ -22,7 +22,7 @@ const LoginCard = ({
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            error={errors.username}
+            error={errors?.username}
           />
           <InputField
             label="Password:"
@@ -30,7 +30,7 @@ const LoginCard = ({
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            error={errors.password}
+            error={errors?.password}
           />
 
           <Button type="submit" error={loginError}>
