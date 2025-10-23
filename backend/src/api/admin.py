@@ -12,30 +12,40 @@ class EquipmentAdmin(admin.ModelAdmin):
 class ConditionPhotoAdmin(admin.ModelAdmin):
     list_display = (
         "equipment",
-        "image_preview",
+        "photo_preview",
         "photo_location",
         "timestamp",
         "contract_identifier",
+        "uploaded_by",
     )
     list_filter = ("equipment", "photo_location", "timestamp")
-    readonly_fields = ("image_preview",)
+    readonly_fields = ("photo_preview",)
 
-    def image_preview(self, obj):
-        if obj.image:
-            return mark_safe(f'<img src="{obj.image.url}" width="150" height="auto" />')
-        return "No Image"
+    def photo_preview(self, obj):
+        if obj.photo:
+            return mark_safe(f'<img src="{obj.photo.url}" width="150" height="auto" />')
+        return "No Photo"
 
-    image_preview.short_description = "Image Preview"
+    photo_preview.short_description = "Photo Preview"
 
 
 @admin.register(DamageReport)
 class DamageReportAdmin(admin.ModelAdmin):
     list_display = (
-        "damage_location",
         "equipment",
+        "photo_preview",
+        "damage_location",
         "reported_by",
         "damage_type",
         "notes",
         "reported_at",
     )
+    readonly_fields = ("photo_preview",)
     list_filter = ("damage_location", "equipment", "reported_by", "damage_type")
+
+    def photo_preview(self, obj):
+        if obj.photo:
+            return mark_safe(f'<img src="{obj.photo.url}" width="150" height="auto" />')
+        return "No Photo"
+
+    photo_preview.short_description = "Photo Preview"

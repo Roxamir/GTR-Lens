@@ -19,15 +19,25 @@ class DamageReportSerializer(serializers.ModelSerializer):
 
 class EquipmentSerializer(serializers.ModelSerializer):
     damage_report_count = serializers.SerializerMethodField()
+    latest_contract = serializers.SerializerMethodField()
     damage_reports = DamageReportSerializer(many=True, read_only=True)
 
     def get_damage_report_count(self, obj):
         return obj.damage_reports.count()
 
+    def get_latest_contract(self, obj):
+        return obj.get_latest_contract_identifier()
+
     class Meta:
-        ordering = ["name"]
         model = Equipment
-        fields = ["id", "name", "notes", "damage_reports", "damage_report_count"]
+        fields = [
+            "id",
+            "name",
+            "notes",
+            "damage_reports",
+            "damage_report_count",
+            "latest_contract",
+        ]
 
 
 class ConditionPhotoSerializer(serializers.ModelSerializer):
@@ -37,7 +47,7 @@ class ConditionPhotoSerializer(serializers.ModelSerializer):
         model = ConditionPhoto
         fields = [
             "id",
-            "image",
+            "photo",
             "contract_identifier",
             "timestamp",
             "photo_location",
