@@ -118,7 +118,7 @@ const DamageReportPage = () => {
   };
 
   return (
-    <div className="p-8 w-full">
+    <div className="p-8 w-full max-w-md mx-auto">
       <LoadingOverlay loading={loading} />
       <h1 className="text-3xl font-bold mb-6">Damage Report</h1>
 
