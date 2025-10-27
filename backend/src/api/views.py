@@ -212,17 +212,19 @@ class DamageReportViewSet(viewsets.ModelViewSet):
         serializer.save(reported_by=self.request.user)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def user_login(request):
-   
-        username = request.data.get('username')
-        password = request.data.get('password')
 
-        user = authenticate(username=username, password=password)
+    username = request.data.get("username")
+    password = request.data.get("password")
 
-        if user:
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
+    user = authenticate(username=username, password=password)
 
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    if user:
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({"token": token.key}, status=status.HTTP_200_OK)
+
+    return Response(
+        {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+    )

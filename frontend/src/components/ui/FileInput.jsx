@@ -26,15 +26,17 @@ const FileInput = ({ label, id, onFileChange, error, selectedFile }) => {
         className={`w-full flex items-center justify-center p-4 border-2 border-dashed rounded-md cursor-pointer
                     ${error ? "border-red-500" : "border-gray-500 hover:border-blue-400"}`}
       >
-        <div className="items-center">
+        <div className="w-full items-center max-w-sm">
           {previewUrl ? (
-            <div className="text-center">
+            <div className="text-center w-full max-w-md">
               <img
                 src={previewUrl}
                 alt="Preview"
-                className="w-full h-36 object-contain rounded-md"
+                className="w-full h-36 object-contain rounded-md mb-2"
               />
-              {selectedFile?.name}
+              <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm text-gray-400 px-2">
+                {selectedFile?.name}
+              </div>
             </div>
           ) : (
             <div className="text-center">
@@ -50,7 +52,7 @@ const FileInput = ({ label, id, onFileChange, error, selectedFile }) => {
         id={id}
         name={id}
         type="file"
-        accept=".jpg,.jpeg,.png"
+        accept="image/*"
         onChange={onFileChange}
         className="hidden"
       />

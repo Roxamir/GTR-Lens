@@ -1,4 +1,5 @@
-const API_URL = "http://127.0.0.1:8000/api/";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/";
 
 const getAuthToken = () => {
   return localStorage.getItem("token");
@@ -6,7 +7,7 @@ const getAuthToken = () => {
 
 const getEquipmentList = async () => {
   const token = getAuthToken();
-  let url = `${API_URL}equipment/`;
+  let url = `${API_BASE_URL}equipment/`;
   const response = await fetch(url, {
     headers: {
       Authorization: `Token ${token}`,
@@ -22,7 +23,7 @@ const getEquipmentList = async () => {
 const getPhotos = async (equipmentId = null, page = 1) => {
   const token = getAuthToken();
 
-  let url = `${API_URL}photos/`;
+  let url = `${API_BASE_URL}photos/`;
 
   const params = [];
 
@@ -52,7 +53,7 @@ const getPhotos = async (equipmentId = null, page = 1) => {
 
 const uploadConditionPhotos = async (formData) => {
   const token = getAuthToken();
-  let url = `${API_URL}photos/bulk_upload/`;
+  let url = `${API_BASE_URL}photos/bulk_upload/`;
 
   const response = await fetch(url, {
     method: "POST",
@@ -71,7 +72,7 @@ const uploadConditionPhotos = async (formData) => {
 
 const uploadDamageReports = async (formData) => {
   const token = getAuthToken();
-  const url = `${API_URL}photos/submit_damage_reports/`;
+  const url = `${API_BASE_URL}photos/submit_damage_reports/`;
 
   const response = await fetch(url, {
     method: "POST",

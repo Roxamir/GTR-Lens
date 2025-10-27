@@ -3,9 +3,9 @@ import { useCallback, useState } from "react";
 function useDamageReports(initialReports = []) {
   const [damageReports, setDamageReports] = useState(initialReports);
 
-  const addDamageReport = () => {
-    setDamageReports([
-      ...damageReports,
+  const addDamageReport = useCallback(() => {
+    setDamageReports((prev) => [
+      ...prev,
       {
         damage_location: "OTHER",
         damage_type: "OTHER",
@@ -13,31 +13,33 @@ function useDamageReports(initialReports = []) {
         photo: null,
       },
     ]);
-  };
+  }, []);
 
-  const removeDamageReport = (indexToRemove) => {
-    setDamageReports(damageReports.filter((_, i) => i !== indexToRemove));
-  };
+  const removeDamageReport = useCallback((indexToRemove) => {
+    setDamageReports((prev) => prev.filter((_, i) => i !== indexToRemove));
+  }, []);
 
-  const updateDamageReport = (index, field, value) => {
-    const newDamageReports = damageReports.map((report, i) => {
-      if (i === index) {
-        return { ...report, [field]: value };
-      }
-      return report;
-    });
-    setDamageReports(newDamageReports);
-  };
+  const updateDamageReport = useCallback((index, field, value) => {
+    setDamageReports((prev) =>
+      prev.map((report, i) => {
+        if (i === index) {
+          return { ...report, [field]: value };
+        }
+        return report;
+      })
+    );
+  }, []);
 
-  const updateDamagePhoto = (index, file) => {
-    const newDamageReports = damageReports.map((report, i) => {
-      if (i === index) {
-        return { ...report, photo: file };
-      }
-      return report;
-    });
-    setDamageReports(newDamageReports);
-  };
+  const updateDamagePhoto = useCallback((index, file) => {
+    setDamageReports((prev) =>
+      prev.map((report, i) => {
+        if (i === index) {
+          return { ...report, photo: file };
+        }
+        return report;
+      })
+    );
+  }, []);
 
   const clearDamageReports = useCallback(() => {
     setDamageReports([]);
