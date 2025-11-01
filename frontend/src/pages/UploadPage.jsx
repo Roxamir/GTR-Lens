@@ -48,9 +48,7 @@ const UploadPage = () => {
     updateDamageReport,
     updateDamagePhoto,
     clearDamageReports,
-  } = useDamageReports([
-    { damage_type: "OTHER", damage_location: "OTHER", notes: "", photo: null },
-  ]);
+  } = useDamageReports([]);
 
   useEffect(() => {
     if (preSelectedType) {
