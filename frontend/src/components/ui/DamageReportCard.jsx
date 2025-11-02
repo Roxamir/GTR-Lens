@@ -1,6 +1,6 @@
 import { formatDate } from "../../utils/formatDate";
 
-const DamageReportCard = ({ report, setSelectedImage }) => {
+const DamageReportCard = ({ report, setSelectedPhoto }) => {
   const formattedDate = formatDate(report.reported_at);
   const imageUrl = report.photo;
 
@@ -26,18 +26,17 @@ const DamageReportCard = ({ report, setSelectedImage }) => {
             <span className="font-semibold">Notes: {report.notes}</span>{" "}
           </div>
           <div>
-            {imageUrl ? (
-              <img
-                className="rounded-sm shadow-lg w-full h-48 object-cover transition-transform duration-200 hover:scale-103 cursor-pointer"
-                src={imageUrl}
-                alt="Damage Report Photo"
-                onClick={() => setSelectedImage(imageUrl)}
-              />
-            ) : (
-              <span className="text-gray-500 text-sm">
-                No Photo Attached :(
-              </span>
-            )}
+            <span className="font-semibold">
+              Reported By: {report.reported_by}
+            </span>{" "}
+          </div>
+          <div>
+            <img
+              className="rounded-sm shadow-lg w-full h-48 object-cover transition-transform duration-200 hover:scale-103 cursor-pointer"
+              src={imageUrl}
+              alt="Damage Report Photo"
+              onClick={() => setSelectedPhoto(imageUrl)}
+            />
           </div>
         </div>
       </div>

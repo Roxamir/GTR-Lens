@@ -3,6 +3,8 @@ from api.models import Equipment, ConditionPhoto, DamageReport
 
 
 class DamageReportSerializer(serializers.ModelSerializer):
+    reported_by = serializers.StringRelatedField(read_only=True)
+
     class Meta:
         model = DamageReport
         fields = [
@@ -14,7 +16,7 @@ class DamageReportSerializer(serializers.ModelSerializer):
             "reported_at",
             "reported_by",
         ]
-        read_only_fields = ["reported_at", "reported_by"]
+        read_only_fields = ["reported_at"]
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
@@ -42,6 +44,7 @@ class EquipmentSerializer(serializers.ModelSerializer):
 
 class ConditionPhotoSerializer(serializers.ModelSerializer):
     equipment = EquipmentSerializer(read_only=True)
+    uploaded_by = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = ConditionPhoto
@@ -54,4 +57,5 @@ class ConditionPhotoSerializer(serializers.ModelSerializer):
             "equipment",
             "notes",
             "photo_type",
+            "uploaded_by",
         ]

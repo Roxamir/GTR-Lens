@@ -35,6 +35,8 @@ const PhotoCard = ({ photo, setSelectedPhoto }) => {
           <span>Contract: {photo.contract_identifier}</span>
           <span className="mx-1">|</span>
           <span>{formattedDate}</span>
+          <span className="mx-1">|</span>
+          <span>Uploaded By: {photo.uploaded_by}</span>{" "}
         </div>
       </div>
     </div>

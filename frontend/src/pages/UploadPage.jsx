@@ -211,7 +211,7 @@ const UploadPage = () => {
       // Send the final data to our Django server
       await uploadConditionPhotos(finalFormData);
 
-      // --- 4. RESET FORM ON SUCCESS ---
+      // --- RESET FORM ON SUCCESS ---
       setFiles({
         frontPhoto: null,
         rearPhoto: null,
