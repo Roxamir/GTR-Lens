@@ -6,7 +6,7 @@ import Button from "../components/ui/Button";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import useEquipment from "../hooks/useEquipment";
 import useDamageReports from "../hooks/useDamageReports";
-import { uploadDamageReports } from "../services/apiService";
+import { uploadDamageReports, uploadFileToS3 } from "../services/apiService";
 
 const DamageReportPage = () => {
   const {
@@ -38,14 +38,11 @@ const DamageReportPage = () => {
       newErrors.equipment = "Please select a piece of equipment.";
     }
 
-    // Validate each damage report
     const damageReportErrors = damageReports.map((report) => {
       const reportErrors = {};
-
       if (!report.notes || report.notes.trim() === "") {
         reportErrors.notes = "Notes are required";
       }
-
       if (!report.photo) {
         reportErrors.photo = "Photo is required";
       } else {
@@ -54,7 +51,6 @@ const DamageReportPage = () => {
           reportErrors.photo = "Photo must be less than 5MB";
         }
       }
-
       return Object.keys(reportErrors).length > 0 ? reportErrors : null;
     });
 
@@ -74,33 +70,46 @@ const DamageReportPage = () => {
 
     setErrors({});
     setFormError(null);
-
-    const formData = new FormData();
-    formData.append("equipment", selectedEquipment.id);
-    formData.append("damage_report_count", damageReports.length);
-
-    damageReports.forEach((report, index) => {
-      formData.append(`damage_report_${index}_type`, report.damage_type);
-      formData.append(
-        `damage_report_${index}_location`,
-        report.damage_location
-      );
-      formData.append(`damage_report_${index}_notes`, report.notes);
-      if (report.photo) {
-        formData.append(`damage_report_${index}_photo`, report.photo);
-      }
-    });
+    setLoading(true);
 
     try {
-      setLoading(true);
-      const startTime = Date.now();
+      // Upload all damage report photos and create new report data
+      const processedDamageReports = await Promise.all(
+        damageReports.map(async (report) => {
+          const photoKey = await uploadFileToS3(report.photo, "damage");
+          return {
+            damage_type: report.damage_type,
+            damage_location: report.damage_location,
+            notes: report.notes,
+            photo_key: photoKey,
+          };
+        })
+      );
 
-      await uploadDamageReports(formData);
+      // Build the final form data with text and S3 keys
+      const finalFormData = new FormData();
+      finalFormData.append("equipment", selectedEquipment.id);
+      finalFormData.append(
+        "damage_report_count",
+        processedDamageReports.length
+      );
 
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 500) {
-        await new Promise((resolve) => setTimeout(resolve, 500 - elapsed));
-      }
+      processedDamageReports.forEach((report, index) => {
+        finalFormData.append(`damage_report_${index}_type`, report.damage_type);
+        finalFormData.append(
+          `damage_report_${index}_location`,
+          report.damage_location
+        );
+        finalFormData.append(`damage_report_${index}_notes`, report.notes);
+        if (report.photo_key) {
+          finalFormData.append(
+            `damage_report_${index}_photo_key`,
+            report.photo_key
+          );
+        }
+      });
+
+      await uploadDamageReports(finalFormData);
 
       clearDamageReports();
       addDamageReport();

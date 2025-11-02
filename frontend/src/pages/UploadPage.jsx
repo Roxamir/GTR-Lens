@@ -11,7 +11,7 @@ import Button from "../components/ui/Button";
 import DamageReportSection from "../components/ui/DamageReportSection";
 import useDamageReports from "../hooks/useDamageReports";
 import useEquipment from "../hooks/useEquipment";
-import { uploadConditionPhotos } from "../services/apiService";
+import { uploadConditionPhotos, uploadFileToS3 } from "../services/apiService";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 
 const contractIdValidators = [
@@ -89,6 +89,7 @@ const UploadPage = () => {
     event.preventDefault();
     const newErrors = {};
 
+    // --- VALIDATION  --- //
     if (!selectedEquipment) {
       newErrors.equipment = "Please select a piece of equipment.";
     }
@@ -142,45 +143,75 @@ const UploadPage = () => {
 
     setErrors({});
     setFormError(null);
+    setLoading(true);
 
-    const formData = new FormData();
-    formData.append("equipment", selectedEquipment.id);
-    formData.append("contract_identifier", contractId);
-    formData.append("upload_type", uploadType);
-
-    if (files.frontPhoto) formData.append("front_view_photo", files.frontPhoto);
-    if (files.rearPhoto) formData.append("rear_view_photo", files.rearPhoto);
-    if (files.leftPhoto) formData.append("left_view_photo", files.leftPhoto);
-    if (files.rightPhoto) formData.append("right_view_photo", files.rightPhoto);
-    if (files.hookupPhoto)
-      formData.append("hookup_view_photo", files.hookupPhoto);
-
-    if (damageReports.length > 0) {
-      formData.append("damage_report_count", damageReports.length);
-      damageReports.forEach((report, index) => {
-        formData.append(`damage_report_${index}_type`, report.damage_type);
-        formData.append(
-          `damage_report_${index}_location`,
-          report.damage_location
-        );
-        formData.append(`damage_report_${index}_notes`, report.notes);
-        if (report.photo) {
-          formData.append(`damage_report_${index}_photo`, report.photo);
-        }
-      });
-    }
-
+    // --- SUBMISSION LOGIC --- //
     try {
-      setLoading(true);
-      const startTime = Date.now();
+      // Upload all condition photos in parallel
+      const [frontKey, rearKey, leftKey, rightKey, hookupKey] =
+        await Promise.all([
+          uploadFileToS3(files.frontPhoto, "condition"),
+          uploadFileToS3(files.rearPhoto, "condition"),
+          uploadFileToS3(files.leftPhoto, "condition"),
+          uploadFileToS3(files.rightPhoto, "condition"),
+          uploadFileToS3(files.hookupPhoto, "condition"),
+        ]);
 
-      await uploadConditionPhotos(formData);
+      // Upload all damage report photos and create new report data
+      const processedDamageReports = await Promise.all(
+        damageReports.map(async (report) => {
+          const photoKey = await uploadFileToS3(report.photo, "damage");
+          return {
+            damage_type: report.damage_type,
+            damage_location: report.damage_location,
+            notes: report.notes,
+            photo_key: photoKey,
+          };
+        })
+      );
 
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 500) {
-        await new Promise((resolve) => setTimeout(resolve, 500 - elapsed));
+      // --- SUBMIT FINAL DATA TO BACKEND --- //
+      const finalFormData = new FormData();
+      finalFormData.append("equipment", selectedEquipment.id);
+      finalFormData.append("contract_identifier", contractId);
+      finalFormData.append("upload_type", uploadType);
+
+      // Add condition photo keys (if they exist)
+      if (frontKey) finalFormData.append("front_view_key", frontKey);
+      if (rearKey) finalFormData.append("rear_view_key", rearKey);
+      if (leftKey) finalFormData.append("left_view_key", leftKey);
+      if (rightKey) finalFormData.append("right_view_key", rightKey);
+      if (hookupKey) finalFormData.append("hookup_view_key", hookupKey);
+
+      // Add processed damage reports
+      if (processedDamageReports.length > 0) {
+        finalFormData.append(
+          "damage_report_count",
+          processedDamageReports.length
+        );
+        processedDamageReports.forEach((report, index) => {
+          finalFormData.append(
+            `damage_report_${index}_type`,
+            report.damage_type
+          );
+          finalFormData.append(
+            `damage_report_${index}_location`,
+            report.damage_location
+          );
+          finalFormData.append(`damage_report_${index}_notes`, report.notes);
+          if (report.photo_key) {
+            finalFormData.append(
+              `damage_report_${index}_photo_key`,
+              report.photo_key
+            );
+          }
+        });
       }
 
+      // Send the final data to our Django server
+      await uploadConditionPhotos(finalFormData);
+
+      // --- 4. RESET FORM ON SUCCESS ---
       setFiles({
         frontPhoto: null,
         rearPhoto: null,
@@ -254,15 +285,6 @@ const UploadPage = () => {
           Submit
         </Button>
       </form>
-
-      {/* A small panel to display the current selection for testing */}
-      {selectedEquipment && (
-        <div className="mt-8 p-4 bg-transparent rounded">
-          <h3 className="font-bold">Current Selection:</h3>
-          <p>ID: {selectedEquipment.id}</p>
-          <p>Name: {selectedEquipment.name}</p>
-        </div>
-      )}
     </div>
   );
 };

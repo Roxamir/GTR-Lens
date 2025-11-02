@@ -1,9 +1,9 @@
 services:
   web:
     build: .
-    container_name: gtr-lens-web
+    container_name: ${CONTAINER_NAME}
     env_file:
-      - .env
+      - .env.local
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
