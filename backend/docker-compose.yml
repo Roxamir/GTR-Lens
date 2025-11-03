@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
   web:
     build: .
-    container_name: gtr-lens-web
+    container_name: ${CONTAINER_NAME}
     env_file:
       - .env
     ports:

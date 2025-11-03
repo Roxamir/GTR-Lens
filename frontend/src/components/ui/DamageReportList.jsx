@@ -1,6 +1,6 @@
 import DamageReportCard from "./DamageReportCard";
 
-const DamageReportList = ({ damageReports, setSelectedImage }) => {
+const DamageReportList = ({ damageReports, setSelectedPhoto }) => {
   if (damageReports.length === 0) {
     return (
       <div className="text-center py-8 text-gray-400">
@@ -17,7 +17,7 @@ const DamageReportList = ({ damageReports, setSelectedImage }) => {
         <DamageReportCard
           key={report.id}
           report={report}
-          setSelectedImage={setSelectedImage}
+          setSelectedPhoto={setSelectedPhoto}
         />
       ))}
     </div>

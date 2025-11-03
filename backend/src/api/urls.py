@@ -8,8 +8,12 @@ router.register(r"photos", views.ConditionPhotoViewSet, basename="photo")
 router.register(r"damage-reports", views.DamageReportViewSet)
 
 
-
 urlpatterns = [
     path("", include(router.urls)),
-    path("login/", views.user_login)
+    path("login/", views.user_login),
+    path(
+        "generate-upload-url/",
+        views.GeneratePresignedURLView.as_view(),
+        name="generate-upload-url",
+    ),
 ]

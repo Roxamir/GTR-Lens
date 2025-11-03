@@ -1,8 +1,49 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/";
 
 const getAuthToken = () => {
   return localStorage.getItem("token");
+};
+
+const getPresignedUploadUrl = async (fileName, fileType) => {
+  const token = getAuthToken();
+  const url = `${API_BASE_URL}generate-upload-url/`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Token ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ file_name: fileName, file_type: fileType }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get pre-signed URL");
+  }
+  return response.json();
+};
+
+const uploadFileToS3 = async (file, fileType) => {
+  if (!file) return null;
+
+  const presignedData = await getPresignedUploadUrl(file.name, fileType);
+
+  const s3FormData = new FormData();
+  Object.entries(presignedData.fields).forEach(([key, value]) => {
+    s3FormData.append(key, value);
+  });
+  s3FormData.append("file", file);
+
+  const s3Response = await fetch(presignedData.url, {
+    method: "POST",
+    body: s3FormData,
+  });
+
+  if (!s3Response.ok) {
+    throw new Error(`Failed to upload ${file.name} to S3.`);
+  }
+
+  return presignedData.fields.key;
 };
 
 const getEquipmentList = async () => {
@@ -94,4 +135,6 @@ export {
   getEquipmentList,
   getPhotos,
   uploadDamageReports,
+  getPresignedUploadUrl,
+  uploadFileToS3,
 };
