@@ -8,6 +8,7 @@ import {
   HiOutlineXMark,
   HiExclamationTriangle,
 } from "react-icons/hi2";
+import gtrLogo from "../../assets/gtr_logo.svg";
 
 import Button from "../ui/Button";
 import useAuth from "../../hooks/useAuth";
@@ -34,7 +35,7 @@ const NavBar = () => {
     <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between bg-slate-900 text-white px-8 z-10">
       <Link to="/" className="group" onClick={closeMenu}>
         <img
-          src="/src/assets/gtr_logo.svg"
+          src={gtrLogo}
           width={50}
           height={50}
           alt="GTR Logo"
