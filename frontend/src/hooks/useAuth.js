@@ -20,7 +20,7 @@ const useAuth = () => {
     }
 
     const data = await response.json();
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("token", data.key);
     navigate("/equipment");
   };
 
