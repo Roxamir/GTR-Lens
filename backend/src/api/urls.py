@@ -10,7 +10,7 @@ router.register(r"damage-reports", views.DamageReportViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("login/", views.user_login),
+    path("auth/", include("dj_rest_auth.urls")),
     path(
         "generate-upload-url/",
         views.GeneratePresignedURLView.as_view(),

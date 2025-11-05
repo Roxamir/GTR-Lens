@@ -1,16 +1,56 @@
-# React + Vite
+# GTR-Lens Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory contains the frontend code for the GTR-Lens application, built with React and Vite.
 
-Currently, two official plugins are available:
+For a full overview of the project, please see the [root README](../README.md).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting Started
 
-## React Compiler
+### Prerequisites
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/) (or another package manager)
 
-## Expanding the ESLint configuration
+### Installation
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1.  Navigate to the frontend directory:
+    ```sh
+    cd frontend
+    ```
+2.  Install dependencies:
+    ```sh
+    npm install
+    ```
+
+### Running the Development Server
+
+To start the Vite development server with Hot Module Replacement (HMR):
+
+```sh
+npm run dev
+```
+
+The application will be available at `http://localhost:5173` (by default).
+
+## Available Scripts
+
+- `npm run dev`: Starts the development server.
+- `npm run build`: Bundles the app for production.
+- `npm run lint`: Lints the source code using ESLint.
+- `npm run preview`: Serves the production build locally for previewing.
+
+## Building for Production
+
+When building the app for a production environment, you must provide the `VITE_API_URL` environment variable.
+
+This variable tells the frontend where to send its API requests. For a deployment where the frontend and backend are served from the same domain (e.g., behind a reverse proxy), you'll set the URL to a relative path:
+
+```sh
+VITE_API_URL=/api/ npm run build
+```
+
+If your backend is hosted on a separate domain, you would use the full URL:
+
+```sh
+VITE_API_URL=https://api.your-domain.com/ npm run build
+```

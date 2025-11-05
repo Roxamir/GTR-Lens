@@ -1,0 +1,17 @@
+# Copy this file to docker-compose.override.yml to run a local database
+
+services:
+  web:
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

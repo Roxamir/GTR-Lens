@@ -1,0 +1,74 @@
+# This is an example Nginx configuration for GTR-Lens.
+#
+# 1. Replace 'your_domain.com' with your actual domain.
+# 2. Replace '/home/your_user/GTR-Lens' with the absolute path to your project.
+# 3. For HTTPS, uncomment the 'listen 443' block and add your cert paths.
+#
+
+server {
+    listen 80;
+    server_name your_domain.com www.your_domain.com;
+
+    # Set the path to your *frontend* build directory
+    root /home/your_user/GTR-Lens/frontend/dist;
+    index index.html;
+
+    client_max_body_size 25M;
+
+    # --- Serve Django Admin Static Files ---
+    # Update this path to your *backend* staticfiles directory
+    location /static/ {
+        alias /home/your_user/GTR-Lens/backend/staticfiles/;
+    }
+
+    # --- Proxy Django API and Admin ---
+    # This assumes Gunicorn/Uvicorn is running on http://127.0.0.1:8000
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /admin/ {
+        # Note: The trailing slash on proxy_pass is important
+        proxy_pass http://127.0.0.1:8000/admin/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # --- Serve React App (Frontend) ---
+    # This 'try_files' block is the key to making React Router work
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache";
+    }
+
+    # --- Optional: Cache frontend assets ---
+    location /assets {
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+        try_files $uri =404;
+    }
+
+    # --- Optional: HTTPS/SSL with Certbot ---
+    # listen 443 ssl;
+    # server_name your_domain.com www.your_domain.com;
+    #
+    # ssl_certificate /etc/letsencrypt/live/your_domain.com/fullchain.pem;
+    # ssl_certificate_key /etc/letsencrypt/live/your_domain.com/privkey.pem;
+    # include /etc/letsencrypt/options-ssl-nginx.conf;
+    # ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    #
+    # You would also add a separate server block to redirect HTTP to HTTPS
+}
+
+# --- Optional: Redirect HTTP to HTTPS ---
+# server {
+#    listen 80;
+#    server_name your_domain.com www.your_domain.com;
+#    return 301 https://$host$request_uri;
+# }
