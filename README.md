@@ -1,10 +1,9 @@
 # GTR-Lens
 
-A web application for tracking tools and rentals at Grover Tool & Rentals.
+A full-stack web application designed for Grover Tool & Rentals to track the before-and-after condition of rental equipment. This tool helps to streamline the check-in/check-out process, minimize customer disputes, and maintain a visual history of asset conditions.
 
 ## Table of Contents
 
-- [About The Project](#about-the-project)
 - [Project Structure](#project-structure)
 - [Technology Stack](#technology-stack)
 - [Getting Started (Recommended)](#getting-started-recommended)
@@ -15,10 +14,6 @@ A web application for tracking tools and rentals at Grover Tool & Rentals.
 - [Deployment (Production)](#deployment-production)
 - [Contributing](#contributing)
 - [License](#license)
-
-## About The Project
-
-This project helps manage inventory, track rentals, and handle customer information for Grover Tool & Rentals.
 
 ## Project Structure
 
