@@ -14,7 +14,7 @@ const EquipmentCard = ({ equipment }) => {
         {/* Contract Info */}
         <div className="space-y-2">
           <div className="text-sm text-gray-300">
-            <span className="font-semibold">Latest Contract Checked Out:</span>{" "}
+            <span className="font-semibold">Latest Contract:</span>{" "}
             <span className="text-gray-400">
               {equipment.latest_contract || "N/A"}
             </span>
