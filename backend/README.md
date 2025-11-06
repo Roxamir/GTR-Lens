@@ -6,6 +6,14 @@ For a full overview of the project, please see the [root README](../README.md).
 
 ---
 
+## Technology Stack
+- **Framework**: [Django](https://www.djangoproject.com/)
+- **API**: [Django REST Framework](https://www.django-rest-framework.org/)
+- **Authentication**: [dj-rest-auth](https://dj-rest-auth.readthedocs.io/en/latest/) for token-based authentication.
+- **Database**: [PostgreSQL](https://www.postgresql.org/) (configured via `dj-database-url`).
+- **File Storage**: AWS S3 for media file uploads via `django-storages`.
+- **Static Files**: WhiteNoise for serving static files in production.
+
 ## 🚀 Getting Started (Recommended: Docker)
 
 This is the fastest and most reliable way to get a full development environment running, as it includes the web server and database in one command.
