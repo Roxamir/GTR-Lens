@@ -13,19 +13,6 @@
 
 A full-stack web application designed for Grover Tool & Rentals to track the before-and-after condition of rental equipment. This tool helps to streamline the check-in/check-out process, minimize customer disputes, and maintain a visual history of asset conditions.
 
-## Table of Contents
-
-- [Project Structure](#project-structure)
-- [Technology Stack](#technology-stack)
-- [Getting Started (Recommended)](#getting-started-recommended)
-  - [Prerequisites](#prerequisites)
-  - [Terminal 1: Start the Backend (Docker)](#terminal-1-start-the-backend-docker)
-  - [Terminal 2: Start the Frontend (Node)](#terminal-2-start-the-frontend-node)
-- [Running Manually (Alternative)](#running-manually-alternative)
-- [Deployment (Production)](#deployment-production)
-- [Contributing](#contributing)
-- [License](#license)
-
 ## Project Structure
 
 The project is a monorepo containing the frontend and backend applications.
