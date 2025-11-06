@@ -104,4 +104,4 @@ Contributions are welcome\! Please feel free to open an issue or submit a pull r
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See ![LICENSE](./LICENSE) for more information.
