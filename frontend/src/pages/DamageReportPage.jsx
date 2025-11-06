@@ -34,6 +34,7 @@ const DamageReportPage = () => {
     event.preventDefault();
     const newErrors = {};
 
+    // --- VALIDATION ---
     if (!selectedEquipment) {
       newErrors.equipment = "Please select a piece of equipment.";
     }
@@ -46,9 +47,9 @@ const DamageReportPage = () => {
       if (!report.photo) {
         reportErrors.photo = "Photo is required";
       } else {
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = 25 * 1024 * 1024; // 25MB
         if (report.photo.size > maxSize) {
-          reportErrors.photo = "Photo must be less than 5MB";
+          reportErrors.photo = "Photo must be less than 25MB";
         }
       }
       return Object.keys(reportErrors).length > 0 ? reportErrors : null;
@@ -73,44 +74,67 @@ const DamageReportPage = () => {
     setLoading(true);
 
     try {
-      // Upload all damage report photos and create new report data
-      const processedDamageReports = await Promise.all(
-        damageReports.map(async (report) => {
-          const photoKey = await uploadFileToS3(report.photo, "damage");
-          return {
-            damage_type: report.damage_type,
-            damage_location: report.damage_location,
-            notes: report.notes,
-            photo_key: photoKey,
-          };
-        })
-      );
-
-      // Build the final form data with text and S3 keys
+      // --- SUBMISSION LOGIC ---
       const finalFormData = new FormData();
       finalFormData.append("equipment", selectedEquipment.id);
-      finalFormData.append(
-        "damage_report_count",
-        processedDamageReports.length
-      );
+      finalFormData.append("damage_report_count", damageReports.length);
 
-      processedDamageReports.forEach((report, index) => {
-        finalFormData.append(`damage_report_${index}_type`, report.damage_type);
-        finalFormData.append(
-          `damage_report_${index}_location`,
-          report.damage_location
+      if (import.meta.env.PROD) {
+        // --- PRODUCTION LOGIC (Upload to S3) ---
+        console.log("Running in Production mode: Uploading to S3");
+
+        const processedDamageReports = await Promise.all(
+          damageReports.map(async (report) => {
+            const photoKey = await uploadFileToS3(report.photo, "damage");
+            return {
+              ...report,
+              photo_key: photoKey,
+            };
+          })
         );
-        finalFormData.append(`damage_report_${index}_notes`, report.notes);
-        if (report.photo_key) {
+
+        // Add S3 keys and text data
+        processedDamageReports.forEach((report, index) => {
           finalFormData.append(
-            `damage_report_${index}_photo_key`,
-            report.photo_key
+            `damage_report_${index}_type`,
+            report.damage_type
           );
-        }
-      });
+          finalFormData.append(
+            `damage_report_${index}_location`,
+            report.damage_location
+          );
+          finalFormData.append(`damage_report_${index}_notes`, report.notes);
+          if (report.photo_key) {
+            finalFormData.append(
+              `damage_report_${index}_photo_key`,
+              report.photo_key
+            );
+          }
+        });
+      } else {
+        // --- DEVELOPMENT LOGIC (Direct File Upload) ---
+        console.log("Running in Development mode: Uploading raw files");
+
+        // Add raw files and text data
+        damageReports.forEach((report, index) => {
+          finalFormData.append(
+            `damage_report_${index}_type`,
+            report.damage_type
+          );
+          finalFormData.append(
+            `damage_report_${index}_location`,
+            report.damage_location
+          );
+          finalFormData.append(`damage_report_${index}_notes`, report.notes);
+          if (report.photo) {
+            finalFormData.append(`damage_report_${index}_photo`, report.photo);
+          }
+        });
+      }
 
       await uploadDamageReports(finalFormData);
 
+      // --- RESET FORM ON SUCCESS ---
       clearDamageReports();
       addDamageReport();
       setSelectedEquipment(null);

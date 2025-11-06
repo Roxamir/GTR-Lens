@@ -119,6 +119,9 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
     def bulk_upload(self, request):
         """
         Custom endpoint to handle condition photos + damage reports in one submission.
+
+        This view is refactored to handle BOTH S3 keys (from production)
+        and raw file uploads (from development).
         """
         equipment_id = request.data.get("equipment")
         contract_id = request.data.get("contract_identifier")
@@ -150,12 +153,24 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
 
         # Use transaction to ensure all-or-nothing
         with transaction.atomic():
-            # 1. Create condition photos from S3 keys
+            # 1. Create condition photos
             for key_name, (location, photo_type) in key_mapping.items():
-                photo_key = request.POST.get(key_name)  # <-- Get from POST
-                if photo_key:
+
+                # Check for S3 key (prod) OR raw file (dev)
+                s3_key = request.POST.get(key_name)
+                file_upload = request.FILES.get(
+                    key_name.replace("_key", "")
+                )  # e.g., "front_view"
+
+                photo_to_save = None
+                if s3_key:
+                    photo_to_save = s3_key  # Save the S3 key string
+                elif file_upload:
+                    photo_to_save = file_upload  # Save the actual file
+
+                if photo_to_save:
                     photo = ConditionPhoto.objects.create(
-                        photo=photo_key,
+                        photo=photo_to_save,
                         contract_identifier=contract_id,
                         photo_location=location,
                         photo_type=photo_type,
@@ -170,7 +185,16 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
                 damage_type = request.data.get(f"damage_report_{i}_type")
                 damage_location = request.data.get(f"damage_report_{i}_location")
                 notes = request.data.get(f"damage_report_{i}_notes", "")
-                photo_key = request.POST.get(f"damage_report_{i}_photo_key")
+
+                # Check for S3 key (prod) OR raw file (dev)
+                s3_key = request.POST.get(f"damage_report_{i}_photo_key")
+                file_upload = request.FILES.get(f"damage_report_{i}_photo")
+
+                photo_to_save = None
+                if s3_key:
+                    photo_to_save = s3_key
+                elif file_upload:
+                    photo_to_save = file_upload
 
                 if damage_type:  # Only create if type is provided
                     report = DamageReport.objects.create(
@@ -178,7 +202,7 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
                         damage_type=damage_type,
                         damage_location=damage_location,
                         notes=notes,
-                        photo=photo_key,
+                        photo=photo_to_save,
                         reported_by=request.user,
                     )
                     created_reports.append(report)
@@ -195,8 +219,8 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"])
     def submit_damage_reports(self, request):
         """
-        Standalone endpoint for submitting damage reports without condition photos.
-        Accepts S3 keys instead of files.
+        Standalone endpoint for submitting damage reports.
+        Refactored to handle S3 keys (prod) or raw files (dev).
         """
         equipment_id = request.data.get("equipment")
 
@@ -210,7 +234,7 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
             equipment = Equipment.objects.get(id=equipment_id)
         except Equipment.DoesNotExist:
             return Response(
-                {"error": "Equipment not found"}, status=status.HTTP_404_NOT_FOUND
+                {"error": "Equipment not found"}, status=status.HTTP_440_NOT_FOUND
             )
 
         created_reports = []
@@ -228,9 +252,15 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
                 damage_location = request.data.get(f"damage_report_{i}_location")
                 notes = request.data.get(f"damage_report_{i}_notes", "")
 
-                # --- THIS IS THE FIX ---
-                # Look for the S3 key in request.POST
-                photo_key = request.POST.get(f"damage_report_{i}_photo_key")
+                # Check for S3 key (prod) OR raw file (dev)
+                s3_key = request.POST.get(f"damage_report_{i}_photo_key")
+                file_upload = request.FILES.get(f"damage_report_{i}_photo")
+
+                photo_to_save = None
+                if s3_key:
+                    photo_to_save = s3_key
+                elif file_upload:
+                    photo_to_save = file_upload
 
                 if damage_type:  # Only create if type is provided
                     report = DamageReport.objects.create(
@@ -238,59 +268,7 @@ class ConditionPhotoViewSet(viewsets.ModelViewSet):
                         damage_type=damage_type,
                         damage_location=damage_location,
                         notes=notes,
-                        photo=photo_key,  # Save the key (or None)
-                        reported_by=request.user,
-                    )
-                    created_reports.append(report)
-
-        return Response(
-            {
-                "message": "Damage reports submitted successfully",
-                "damage_reports_created": len(created_reports),
-            },
-            status=status.HTTP_201_CREATED,
-        )
-        """
-        Standalone endpoint for submitting damage reports without condition photos.
-        """
-        equipment_id = request.data.get("equipment")
-
-        if not equipment_id:
-            return Response(
-                {"error": "Equipment is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        try:
-            equipment = Equipment.objects.get(id=equipment_id)
-        except Equipment.DoesNotExist:
-            return Response(
-                {"error": "Equipment not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        created_reports = []
-        damage_count = int(request.data.get("damage_report_count", 0))
-
-        if damage_count == 0:
-            return Response(
-                {"error": "At least one damage report is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        with transaction.atomic():
-            for i in range(damage_count):
-                damage_type = request.data.get(f"damage_report_{i}_type")
-                damage_location = request.data.get(f"damage_report_{i}_location")
-                notes = request.data.get(f"damage_report_{i}_notes", "")
-                photo_file = request.FILES.get(f"damage_report_{i}_photo")
-
-                if damage_type:  # Only create if type is provided
-                    report = DamageReport.objects.create(
-                        equipment=equipment,
-                        damage_type=damage_type,
-                        damage_location=damage_location,
-                        notes=notes,
-                        photo=photo_file,
+                        photo=photo_to_save,
                         reported_by=request.user,
                     )
                     created_reports.append(report)

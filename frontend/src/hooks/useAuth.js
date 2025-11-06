@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-const API_BASE_URL =
+export const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/";
 
 const useAuth = () => {
   const navigate = useNavigate();
 
   const login = async (username, password) => {
-    let url = `${API_BASE_URL}login/`;
+    let url = `${API_BASE_URL}auth/login/`;
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -20,11 +20,22 @@ const useAuth = () => {
     }
 
     const data = await response.json();
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("token", data.key);
     navigate("/equipment");
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch(`${API_BASE_URL}auth/logout/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${getToken()}`,
+        },
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
     localStorage.removeItem("token");
     navigate("/login");
   };

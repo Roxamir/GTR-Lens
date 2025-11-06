@@ -147,68 +147,105 @@ const UploadPage = () => {
 
     // --- SUBMISSION LOGIC --- //
     try {
-      // Upload all condition photos in parallel
-      const [frontKey, rearKey, leftKey, rightKey, hookupKey] =
-        await Promise.all([
-          uploadFileToS3(files.frontPhoto, "condition"),
-          uploadFileToS3(files.rearPhoto, "condition"),
-          uploadFileToS3(files.leftPhoto, "condition"),
-          uploadFileToS3(files.rightPhoto, "condition"),
-          uploadFileToS3(files.hookupPhoto, "condition"),
-        ]);
-
-      // Upload all damage report photos and create new report data
-      const processedDamageReports = await Promise.all(
-        damageReports.map(async (report) => {
-          const photoKey = await uploadFileToS3(report.photo, "damage");
-          return {
-            damage_type: report.damage_type,
-            damage_location: report.damage_location,
-            notes: report.notes,
-            photo_key: photoKey,
-          };
-        })
-      );
-
-      // --- SUBMIT FINAL DATA TO BACKEND --- //
       const finalFormData = new FormData();
       finalFormData.append("equipment", selectedEquipment.id);
       finalFormData.append("contract_identifier", contractId);
       finalFormData.append("upload_type", uploadType);
 
-      // Add condition photo keys (if they exist)
-      if (frontKey) finalFormData.append("front_view_key", frontKey);
-      if (rearKey) finalFormData.append("rear_view_key", rearKey);
-      if (leftKey) finalFormData.append("left_view_key", leftKey);
-      if (rightKey) finalFormData.append("right_view_key", rightKey);
-      if (hookupKey) finalFormData.append("hookup_view_key", hookupKey);
+      if (import.meta.env.PROD) {
+        // --- PRODUCTION LOGIC (Upload to S3)  ---
+        console.log("Running in Production mode: Uploading to S3");
 
-      // Add processed damage reports
-      if (processedDamageReports.length > 0) {
-        finalFormData.append(
-          "damage_report_count",
-          processedDamageReports.length
+        // Upload all condition photos in parallel
+        const [frontKey, rearKey, leftKey, rightKey, hookupKey] =
+          await Promise.all([
+            uploadFileToS3(files.frontPhoto, "condition"),
+            uploadFileToS3(files.rearPhoto, "condition"),
+            uploadFileToS3(files.leftPhoto, "condition"),
+            uploadFileToS3(files.rightPhoto, "condition"),
+            uploadFileToS3(files.hookupPhoto, "condition"),
+          ]);
+
+        // Add condition photo keys (if they exist)
+        if (frontKey) finalFormData.append("front_view_key", frontKey);
+        if (rearKey) finalFormData.append("rear_view_key", rearKey);
+        if (leftKey) finalFormData.append("left_view_key", leftKey);
+        if (rightKey) finalFormData.append("right_view_key", rightKey);
+        if (hookupKey) finalFormData.append("hookup_view_key", hookupKey);
+
+        // Upload all damage report photos and create new report data
+        const processedDamageReports = await Promise.all(
+          damageReports.map(async (report) => {
+            const photoKey = await uploadFileToS3(report.photo, "damage");
+            return {
+              ...report, // keep existing data
+              photo_key: photoKey,
+            };
+          })
         );
-        processedDamageReports.forEach((report, index) => {
+
+        // Add processed damage reports as text and keys
+        if (processedDamageReports.length > 0) {
           finalFormData.append(
-            `damage_report_${index}_type`,
-            report.damage_type
+            "damage_report_count",
+            processedDamageReports.length
           );
-          finalFormData.append(
-            `damage_report_${index}_location`,
-            report.damage_location
-          );
-          finalFormData.append(`damage_report_${index}_notes`, report.notes);
-          if (report.photo_key) {
+          processedDamageReports.forEach((report, index) => {
             finalFormData.append(
-              `damage_report_${index}_photo_key`,
-              report.photo_key
+              `damage_report_${index}_type`,
+              report.damage_type
             );
-          }
-        });
+            finalFormData.append(
+              `damage_report_${index}_location`,
+              report.damage_location
+            );
+            finalFormData.append(`damage_report_${index}_notes`, report.notes);
+            if (report.photo_key) {
+              finalFormData.append(
+                `damage_report_${index}_photo_key`,
+                report.photo_key
+              );
+            }
+          });
+        }
+      } else {
+        // --- DEVELOPMENT LOGIC (Direct File Upload) ---
+        console.log("Running in Development mode: Uploading raw files");
+
+        // Add condition photo files (if they exist)
+        if (files.frontPhoto)
+          finalFormData.append("front_view", files.frontPhoto);
+        if (files.rearPhoto) finalFormData.append("rear_view", files.rearPhoto);
+        if (files.leftPhoto) finalFormData.append("left_view", files.leftPhoto);
+        if (files.rightPhoto)
+          finalFormData.append("right_view", files.rightPhoto);
+        if (files.hookupPhoto)
+          finalFormData.append("hookup_view", files.hookupPhoto);
+
+        // Add damage reports and their raw files
+        if (damageReports.length > 0) {
+          finalFormData.append("damage_report_count", damageReports.length);
+          damageReports.forEach((report, index) => {
+            finalFormData.append(
+              `damage_report_${index}_type`,
+              report.damage_type
+            );
+            finalFormData.append(
+              `damage_report_${index}_location`,
+              report.damage_location
+            );
+            finalFormData.append(`damage_report_${index}_notes`, report.notes);
+            if (report.photo) {
+              // Append the actual file
+              finalFormData.append(
+                `damage_report_${index}_photo`,
+                report.photo
+              );
+            }
+          });
+        }
       }
 
-      // Send the final data to our Django server
       await uploadConditionPhotos(finalFormData);
 
       // --- RESET FORM ON SUCCESS ---
