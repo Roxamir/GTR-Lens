@@ -4,29 +4,6 @@ This directory contains the Django backend for the GTR-Lens application. It serv
 
 For a full overview of the project, please see the [root README](../README.md).
 
-## Table of Contents
-
-- [Technology Stack](#technology-stack)
-- [🚀 Getting Started (Recommended: Docker)](#-getting-started-recommended-docker)
-  - [Prerequisites](#prerequisites)
-  - [1. Set up Environment Files](#1-set-up-environment-files)
-  - [2. Build and Run Containers](#2-build-and-run-containers)
-  - [3. Run Database Migrations](#3-run-database-migrations)
-  - [4. Create a Superuser](#4-create-a-superuser)
-- [Configuration](#configuration)
-- [Running Locally Without Docker (Alternative Method)](#running-locally-without-docker-alternative-method)
-- [API Endpoints](#api-endpoints)
-- [Deployment Notes](#deployment-notes)
-
-## Technology Stack
-
-- **Framework**: [Django](https://www.djangoproject.com/)
-- **API**: [Django REST Framework](https://www.django-rest-framework.org/)
-- **Authentication**: [dj-rest-auth](https://dj-rest-auth.readthedocs.io/en/latest/) for token-based authentication.
-- **Database**: [PostgreSQL](https://www.postgresql.org/) (configured via `dj-database-url`).
-- **File Storage**: AWS S3 for media file uploads via `django-storages`.
-- **Static Files**: WhiteNoise for serving static files in production.
-
 ---
 
 ## 🚀 Getting Started (Recommended: Docker)
